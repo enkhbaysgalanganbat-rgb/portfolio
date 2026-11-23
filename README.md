@@ -2,7 +2,7 @@
 
 Хувийн портфолио вэбсайт · **SWE334 Интернэт программчлал, Бие даалт 2** · СЭЗИС, МСМТ
 
-**Сайт:** https://ЭНД-VERCEL-ЛИНК.vercel.app
+**Сайт:** https://portfolio-iota-ashy-64.vercel.app/
 **Код:** https://github.com/enkhbaysgalanganbat-rgb/portfolio
 
 ---
