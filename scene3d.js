@@ -32,7 +32,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.domElement.setAttribute("aria-label", "Мөрдөн байцаалтын өрөө: ширээ, самбар, баримтууд. Гараар ажиллах бол «Жагсаалт» товчийг ашиглана уу.");
+renderer.domElement.setAttribute("aria-label", L("Мөрдөн байцаалтын өрөө: ширээ, самбар, баримтууд. Гараар ажиллах бол «Жагсаалт» товчийг ашиглана уу.", "Investigation room: desk, boards, documents. With a keyboard, use the “List” button."));
 renderer.domElement.setAttribute("role", "img");
 stage.appendChild(renderer.domElement);
 
@@ -47,7 +47,7 @@ const ANISO = renderer.capabilities.getMaxAnisotropy();
 /* ============================== loading ============================== */
 const manager = new THREE.LoadingManager();
 const bar = $("#loadBar"), loadText = $("#loadText");
-manager.onProgress = (url, done, total) => { bar.style.width = Math.round(done / total * 100) + "%"; loadText.textContent = "Нотлох баримт цуглуулж байна… " + done + "/" + total; };
+manager.onProgress = (url, done, total) => { bar.style.width = Math.round(done / total * 100) + "%"; loadText.textContent = L("Нотлох баримт цуглуулж байна… ", "Collecting evidence… ") + done + "/" + total; };
 const texLoader = new THREE.TextureLoader(manager);
 const imgLoader = new THREE.ImageLoader(manager);
 const gltfLoader = new GLTFLoader(manager);
@@ -245,13 +245,13 @@ function photoTex(image, caption, opts = {}) {
 function newsTex(ev) {
   const W = 640, H = 760, c = canvas(W, H), x = c.getContext("2d");
   photoBg(x, IMG.paper, W, H, "#cfcbc0", "color"); x.fillStyle = "rgba(210,205,195,.45)"; x.fillRect(0, 0, W, H);
-  x.fillStyle = "#1e1b18"; x.font = "700 44px " + FONT.serif; x.textAlign = "center"; x.fillText("ӨДРИЙН СОНИН", W / 2, 70); x.textAlign = "left";
-  x.fillRect(30, 88, W - 60, 4); x.font = "16px " + FONT.mono; x.fillText("СПОРТ, СЭЗИС", 30, 116);
+  x.fillStyle = "#1e1b18"; x.font = "700 44px " + FONT.serif; x.textAlign = "center"; x.fillText(L("ӨДРИЙН СОНИН", "THE DAILY PAPER"), W / 2, 70); x.textAlign = "left";
+  x.fillRect(30, 88, W - 60, 4); x.font = "16px " + FONT.mono; x.fillText(L("СПОРТ, СЭЗИС", "SPORT, UFE"), 30, 116);
   x.font = "700 40px " + FONT.serif; let y = wrap(x, ev.title, 30, 166, W - 60, 44, 2);
   markerCircle(x, W / 2, 166 + (y - 166) / 2 - 16, W * 0.48, (y - 166) / 2 + 26, INKR, 6);
   if (IMG.volleyball) {
     x.save(); x.filter = "grayscale(1) contrast(1.2)"; coverImage(x, IMG.volleyball, 30, y, W - 60, 250); x.restore();
-    x.font = "italic 15px " + FONT.serif; x.fillText("Жишээ зураг", 30, y + 272); y += 300;
+    x.font = "italic 15px " + FONT.serif; x.fillText(L("Жишээ зураг", "Illustration"), 30, y + 272); y += 300;
   }
   x.font = "17px " + FONT.serif; const t = plainText(ev.html);
   const colW = (W - 80) / 2; wrap(x, t, 30, y, colW, 22, 12); wrap(x, t.slice(Math.floor(t.length / 2)), 50 + colW, y, colW, 22, 12);
@@ -263,9 +263,9 @@ function envTex(ev) {
   x.strokeStyle = "rgba(70,45,20,.35)"; x.lineWidth = 3; x.beginPath(); x.moveTo(0, 0); x.lineTo(W / 2, H * 0.58); x.lineTo(W, 0); x.stroke();
   const g = x.createRadialGradient(W / 2 - 8, H * 0.56 - 8, 4, W / 2, H * 0.58, 46); g.addColorStop(0, "#c0392b"); g.addColorStop(1, "#5e0f0b");
   x.fillStyle = g; x.beginPath(); x.arc(W / 2, H * 0.58, 44, 0, Math.PI * 2); x.fill();
-  x.fillStyle = "rgba(255,220,200,.6)"; x.font = "700 30px " + FONT.serif; x.textAlign = "center"; x.fillText("ГЭ", W / 2, H * 0.58 + 11);
+  x.fillStyle = "rgba(255,220,200,.6)"; x.font = "700 30px " + FONT.serif; x.textAlign = "center"; x.fillText(C.person.monogram || "ГЭ", W / 2, H * 0.58 + 11);
   x.fillStyle = "#3b2a15"; x.font = "700 28px " + FONT.mono; x.fillText(ev.file, W / 2, H - 40); x.textAlign = "left";
-  stamp(x, "БИТҮҮМЖИЛСЭН", 150, 90, 24, "rgba(150,30,25,.7)", -0.12);
+  stamp(x, L("БИТҮҮМЖИЛСЭН", "SEALED"), 150, 90, 24, "rgba(150,30,25,.7)", -0.12);
   return c;
 }
 function folderTex(cs, open) {
@@ -276,18 +276,18 @@ function folderTex(cs, open) {
   x.save(); x.translate(60, 120); x.rotate(-0.015);
   photoBg(x, IMG.paper, 420, 92, "rgba(255,255,255,.7)", "screen");
   x.fillStyle = "#b8251f"; x.font = "700 24px " + FONT.mono; x.fillText("CASE " + cs.no, 20, 36);
-  x.fillStyle = "#1d1714"; x.font = "30px " + FONT.hand; x.fillText(cs.title, 20, 76);
+  x.fillStyle = "#1d1714"; let ff = 30; do { x.font = ff + "px " + FONT.hand; ff -= 1; } while (x.measureText(cs.title).width > 390 && ff > 18); x.fillText(cs.title, 20, 76);
   x.restore();
-  x.fillStyle = "rgba(40,25,10,.55)"; x.font = "20px " + FONT.mono; x.fillText("ХЭРГИЙН ХАВТАС, ИНВЕСТИГАЦИ", 60, 300);
-  stamp(x, open ? "НЭЭГДСЭН" : "НУУЦ", W - 170, H - 100, 44, open ? "rgba(40,120,70,.85)" : "rgba(178,34,30,.85)", -0.16);
+  x.fillStyle = "rgba(40,25,10,.55)"; x.font = "20px " + FONT.mono; x.fillText(L("ХЭРГИЙН ХАВТАС, ИНВЕСТИГАЦИ", "CASE FILE, INVESTIGATION"), 60, 300);
+  stamp(x, open ? L("НЭЭГДСЭН", "OPENED") : L("НУУЦ", "SECRET"), W - 170, H - 100, 44, open ? "rgba(40,120,70,.85)" : "rgba(178,34,30,.85)", -0.16);
   return c;
 }
 function mapCardTex() {
   const W = 1200, H = 680, c = canvas(W, H), x = c.getContext("2d");
   photoBg(x, IMG.paper, W, H, "rgba(255,245,220,.5)", "screen");
   if (IMG.map) { x.globalAlpha = 0.94; x.drawImage(IMG.map, 30, 70, W - 60, (W - 60) * 568 / 1200); x.globalAlpha = 1; }
-  x.fillStyle = "#3b2a15"; x.font = "700 30px " + FONT.mono; x.fillText("ГАЗАРЗҮЙН НОТЛОХ БАРИМТ, МОНГОЛ УЛС", 30, 50);
-  [["ub", "СЭЗИС", 30, -40], ["dg", "төрсөн нутаг", -230, 80]].forEach(([id, label, dx, dy]) => {
+  x.fillStyle = "#3b2a15"; x.font = "700 30px " + FONT.mono; x.fillText(L("ГАЗАРЗҮЙН НОТЛОХ БАРИМТ, МОНГОЛ УЛС", "GEOGRAPHIC EVIDENCE, MONGOLIA"), 30, 50);
+  [["ub", L("СЭЗИС", "UFE"), 30, -40], ["dg", L("төрсөн нутаг", "birthplace"), -230, 80]].forEach(([id, label, dx, dy]) => {
     const q = UI.mapXY(G.places[id]), px = 30 + q.x * 1140, py = 70 + q.y * 1140 * 568 / 1200;
     markerCircle(x, px, py, 46, 34, INKR, 6); markerText(x, label, px + dx, py + dy, 40, INKR, -0.05);
   });
@@ -323,8 +323,8 @@ function evCanvas(kind, ev, label) {
   if (kind === "env") return envTex(ev);
   if (kind === "print") return IMG.fp ? (() => { const c = canvas(IMG.fp.width, IMG.fp.height); c.getContext("2d").drawImage(IMG.fp, 0, 0); return c; })() : paperTex(ev);
   if (kind === "photo") {
-    if (ev.id === "ph2" || ev === D.EVIDENCE.ph2) return photoTex(IMG.volleyball, "Волейбол");
-    if (ev === D.EVIDENCE.ubph) return photoTex(IMG.ub, "Улаанбаатар");
+    if (ev.id === "ph2" || ev === D.EVIDENCE.ph2) return photoTex(IMG.volleyball, L("Волейбол", "Volleyball"));
+    if (ev === D.EVIDENCE.ubph) return photoTex(IMG.ub, L("Улаанбаатар", "Ulaanbaatar"));
     return photoTex(IMG.portrait || IMG.fp, ev.title, { mono: true, mark: IMG.portrait ? "" : "?" });
   }
   return paperTex(ev, label);
@@ -370,14 +370,14 @@ function buildDesk() {
     g.position.set(p.x, DESK_Y + 0.0003, p.z); g.rotation.y = p.rot; g.userData.baseY = g.position.y;
     deskItems.push(register(g, { type: "ev", id: "hid1", title: "?", drag: true }));
   }
-  // six case folders
+  // the case folders
   D.CASES.forEach((cs, i) => {
     const mesh = sheet(folderTex(cs, !!UI.state.unlocked[cs.id]), 0.3, 0.001); mesh.rotation.x = -Math.PI / 2;
     const thick = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.008, mesh.userData.size[1]), new THREE.MeshStandardMaterial({ color: 0xcaa46a, roughness: 0.9 }));
     thick.position.y = -0.0045; thick.castShadow = true; thick.receiveShadow = true;
     const tab = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.008, 0.03), thick.material); tab.position.set(-0.08, -0.0045, -mesh.userData.size[1] / 2 - 0.013);
     const g = new THREE.Group(); g.add(thick, tab, mesh); mesh.position.y = 0.0002; scene.add(g);
-    putOnDesk(g, cs.id, -0.98 + i * 0.425 + (rnd() - 0.5) * 0.04, 1.0 + (rnd() - 0.5) * 0.05, (rnd() - 0.5) * 0.12);
+    putOnDesk(g, cs.id, -0.98 + i * (2.125 / Math.max(1, D.CASES.length - 1)) + (rnd() - 0.5) * 0.04, 1.0 + (rnd() - 0.5) * 0.05, (rnd() - 0.5) * 0.12);
     g.position.y += 0.009; g.userData.baseY = g.position.y;
     const d = register(g, { type: "folder", id: cs.id, title: "CASE " + cs.no + ", " + cs.title, drag: true, face: mesh });
     deskItems.push(d); folders[cs.id] = d;
@@ -430,7 +430,7 @@ function pinCard(boardGroup, cnv, w, x, y, rot, data) {
   g.position.set(x, y, 0.024 + (++topOrder) * 0.0006); g.rotation.z = rot; boardGroup.add(g);
   const h = m.userData.size[1], pin = pinMesh(); pin.position.set(0, h / 2 - 0.018, 0.002); g.add(pin);
   register(g, data);
-  pin.traverse((o) => { if (o.isMesh) { o.userData.pick = { type: "pin", id: data.node, title: "Холбоотой баримтыг гэрэлтүүлэх", obj: pin }; } });
+  pin.traverse((o) => { if (o.isMesh) { o.userData.pick = { type: "pin", id: data.node, title: L("Холбоотой баримтыг гэрэлтүүлэх", "Highlight the linked evidence"), obj: pin }; } });
   pickables.push(pin.children[0]);
   g.updateMatrixWorld(true);
   const wp = new THREE.Vector3(); pin.children[0].getWorldPosition(wp);
@@ -561,7 +561,7 @@ function mugPrintTex() {
   markerCircle(x, 40 + 820 * 0.255, 40 + PH * 0.31, 125, 155, INKR_GLOSS, 10);
   inkQuestion(x, 40 + 820 * 0.93, 40 + PH * 0.13, 120, INKR_GLOSS, 0.12);
   markerArrow(x, 40 + 820 * 0.9, 40 + PH * 0.24, 40 + 820 * 0.76, 40 + PH * 0.34, INKR_GLOSS, 8);
-  markerText(x, "ХЭН БЭ?", 60, H - 70, 62, INKB, -0.03);
+  markerText(x, L("ХЭН БЭ?", "WHO?"), 60, H - 70, 62, INKB, -0.03);
   markerUnderline(x, 66, 330, H - 50, INKR, 7);
   markerText(x, C.person.name, 470, H - 74, 34, INKB, -0.02);
   return c;
@@ -576,7 +576,7 @@ function buildBoards() {
   // the real relief map in the middle
   const MW = 0.66, mc = mapCardTex(), mapMesh = sheet(mc, MW, 0.002);
   const mg = new THREE.Group(); mg.add(mapMesh); mg.position.set(0.0, 0.27, 0.026); mg.rotation.z = 0.015; g2.add(mg);
-  register(mg, { type: "map", id: "map", title: "Монгол улсын газрын зураг" });
+  register(mg, { type: "map", id: "map", title: L("Монгол улсын газрын зураг", "Map of Mongolia") });
   [[-0.3, 0.16], [0.3, 0.16], [-0.3, -0.15], [0.3, -0.15]].forEach(([x, y]) => { const p = pinMesh(0x2a2a2a); p.position.set(x, y, 0.002); mg.add(p); });
   // map pins at real coordinates (map image drawn at 30..1170 x 70..638 px of a 1200x680 card)
   const mw = MW, mh = mw * 680 / 1200, place = {};
@@ -587,13 +587,13 @@ function buildBoards() {
     p.traverse((o) => { if (o.isMesh) { o.userData.pick = { type: "place", id, title: G.places[id].name, obj: p }; pickables.push(o); } });
     mg.updateMatrixWorld(true); place[id] = new THREE.Vector3(); p.children[0].getWorldPosition(place[id]);
   });
-  yarn(place.ub, place.dg, { type: "place", id: "link", title: "Дундговь, Улаанбаатар" }, 0.012);
+  yarn(place.ub, place.dg, { type: "place", id: "link", title: L("Дундговь, Улаанбаатар", "Dundgovi, Ulaanbaatar") }, 0.012);
 
   D.BOARD.nodes.forEach((n) => {
     const ev = D.EVIDENCE[n.ev], kind = n.kind;
     const [x, y, r] = NODE_POS[n.id] || [0, 0, 0];
     const w = kind === "note" ? 0.15 : kind === "photo" ? 0.17 : kind === "news" ? 0.21 : 0.19;
-    if (n.id === "b-id") { board.nodes[n.id] = pinCard(g1, mugPrintTex(), 0.44, x, y, r, { type: "ev", id: n.ev, node: n.id, title: "Хэргийн хүн: mug shot" }); return; }
+    if (n.id === "b-id") { board.nodes[n.id] = pinCard(g1, mugPrintTex(), 0.44, x, y, r, { type: "ev", id: n.ev, node: n.id, title: L("Хэргийн хүн: mug shot", "Person of interest: mug shot") }); return; }
     const cnv = kind === "photo" ? evCanvas("photo", ev) : kind === "note" ? noteTex(plainText(ev.html)) : kind === "news" ? newsTex(ev) : markDoc(n.id, paperTex(ev, n.label));
     board.nodes[n.id] = pinCard(g1, cnv, w, x, y, r, { type: "ev", id: n.ev, node: n.id, title: n.label || ev.title });
   });
@@ -607,14 +607,14 @@ function buildBoards() {
   // red yarn with a reason on every string
   D.BOARD.edges.forEach((e) => { const a = board.nodes[e.a], b = board.nodes[e.b]; if (a && b) board.edges.push({ e, mesh: yarn(a.pinPos, b.pinPos, { type: "string", why: e.why, a: e.a, b: e.b, title: e.why }) }); });
   const extraEdges = [
-    { a: "b-edu", b: "x-ub", why: "СЭЗИС Улаанбаатарт байрладаг." },
-    { a: "b-id", b: "x-fp", why: "Хурууны хээ, хэргийн хүн." },
-    { a: "b-champ", b: "x-sl", why: "Тэмцээн, уралдаанд идэвхтэй оролцдог." }
+    { a: "b-edu", b: "x-ub", why: L("СЭЗИС Улаанбаатарт байрладаг.", "UFE is in Ulaanbaatar.") },
+    { a: "b-id", b: "x-fp", why: L("Хурууны хээ, хэргийн хүн.", "The fingerprints and the person.") },
+    { a: "b-champ", b: "x-sl", why: L("Тэмцээн, уралдаанд идэвхтэй оролцдог.", "Active in competitions.") }
   ];
   extraEdges.forEach((e) => { const a = board.nodes[e.a], b = board.nodes[e.b]; if (a && b) board.edges.push({ e, mesh: yarn(a.pinPos, b.pinPos, { type: "string", why: e.why, a: e.a, b: e.b, title: e.why }) }); });
   // UB photo, UB pin on the map, birthplace, Dundgovi pin
-  yarn(board.nodes["x-ub"].pinPos, place.ub, { type: "place", id: "ub", title: "Улаанбаатар" });
-  yarn(board.nodes["b-id"].pinPos, place.dg, { type: "place", id: "dg", title: "Дундговь, төрсөн нутаг" });
+  yarn(board.nodes["x-ub"].pinPos, place.ub, { type: "place", id: "ub", title: L("Улаанбаатар", "Ulaanbaatar") });
+  yarn(board.nodes["b-id"].pinPos, place.dg, { type: "place", id: "dg", title: L("Дундговь, төрсөн нутаг", "Dundgovi, birthplace") });
   decorateBoards(g1, g2);
 }
 // the detective's own marks on the evidence: circled titles, a question in the margin, an underline
@@ -647,13 +647,13 @@ function decorateBoards(g1, g2) {
     const m = stickyMesh(c, w), gg = new THREE.Group(); gg.add(m); gg.position.set(xx, yy, layer()); gg.rotation.z = rot; g.add(gg); return gg;
   };
   card(g1, 0.135, -0.335, 0.405, -0.07, (x, W, H) => inkQuestion(x, W / 2, H / 2 + 10, 300, INKR, -0.08));
-  card(g1, 0.165, -0.55, 0.075, 0.04, (x, W) => { markerText(x, "ЯАГААД", 40, 160, 78, INKB, -0.03); markerText(x, "МСМ?", 70, 268, 92, INKB, -0.02); markerUnderline(x, 60, 360, 300, INKR, 9); });
-  card(g1, 0.12, -0.7, -0.47, 0.07, (x, W, H) => { markerText(x, "БАГ!", 120, 250, 150, INKB, -0.04); markerCircle(x, W / 2 - 10, 200, 250, 120, INKR, 12); }, 0xd8261d);
+  card(g1, 0.165, -0.55, 0.075, 0.04, (x, W) => { markerText(x, L("ЯАГААД", "WHY"), 40, 160, 78, INKB, -0.03); markerText(x, L("МСМ?", "ISM?"), 70, 268, 92, INKB, -0.02); markerUnderline(x, 60, 360, 300, INKR, 9); });
+  card(g1, 0.12, -0.7, -0.47, 0.07, (x, W, H) => { markerText(x, L("БАГ!", "TEAM!"), 100, 250, 140, INKB, -0.04); markerCircle(x, W / 2 - 10, 200, 250, 120, INKR, 12); }, 0xd8261d);
   sticky(g1, 0.085, 0.3, 0.44, 0.1, (x, W, H) => inkQuestion(x, W / 2, H / 2 + 20, 330, INKR, 0.06));
-  sticky(g1, 0.1, -0.3, -0.44, -0.08, (x) => { markerText(x, "ХЭН?", 60, 300, 120, INKB, -0.05); markerUnderline(x, 70, 400, 340, INKR, 10); });
-  sticky(g1, 0.1, 0.97, -0.47, 0.06, (x) => { markerText(x, "ДАРАА", 40, 230, 96, INKB, -0.04); markerText(x, "НЬ?", 90, 350, 110, INKB, -0.03); });
+  sticky(g1, 0.1, -0.3, -0.44, -0.08, (x) => { markerText(x, L("ХЭН?", "WHO?"), 60, 300, 120, INKB, -0.05); markerUnderline(x, 70, 400, 340, INKR, 10); });
+  sticky(g1, 0.1, 0.97, -0.47, 0.06, (x) => { markerText(x, L("ДАРАА", "WHAT"), 40, 230, 96, INKB, -0.04); markerText(x, L("НЬ?", "NEXT?"), 90, 350, 110, INKB, -0.03); });
   sticky(g2, 0.08, -0.34, 0.03, -0.12, (x, W, H) => inkQuestion(x, W / 2, H / 2 + 20, 320, INKR, -0.1));
-  card(g2, 0.13, 0.31, -0.46, -0.05, (x, W, H) => { markerText(x, "ХААНА?", 50, 200, 96, INKB, -0.03); markerArrow(x, 420, 260, 560, 120, INKR, 9); });
+  card(g2, 0.13, 0.31, -0.46, -0.05, (x, W, H) => { markerText(x, L("ХААНА?", "WHERE?"), 50, 200, 96, INKB, -0.03); markerArrow(x, 420, 260, 560, 120, INKR, 9); });
   // masking tape over the top corners of the photographs (they are pinned too, but tape is what holds a print flat)
   ["b-vb", "x-ub"].forEach((id) => {
     const n = board.nodes[id]; if (!n) return;
@@ -711,14 +711,14 @@ function buildProps() {
       mats.forEach((mt) => { if (/light/i.test(mt.name)) { mt.emissive = new THREE.Color(0xffd9a0); mt.emissiveIntensity = 0; lights.bulbMat = mt; } });
     });
     head = lamp.localToWorld(new THREE.Vector3(0, 0.672, -0.168));   // bulb centre in the model (measured from the .bin)
-    register(lamp, { type: "lamp", id: "lamp", title: "Ширээний чийдэн (асаах / унтраах)" });
+    register(lamp, { type: "lamp", id: "lamp", title: L("Ширээний чийдэн (асаах / унтраах)", "Desk lamp (on / off)") });
   }
   lights.lampHead = head;
   const mag = place("magnifying_glass_01", 0.35, 0.8, 0, 1.0, DESK_Y + 0.0135);
-  if (mag) { mag.rotation.set(-Math.PI / 2, 0, Math.PI / 2 + 0.25); register(mag, { type: "mag", id: "mag", title: "Томруулдаг шил (M)" }); props.mag = mag; }
-  const sp = place("round_spectacles", 1.05, 0.74, 1.35, 1.0, DESK_Y + 0.023); if (sp) register(sp, { type: "deco", title: "Нүдний шил" });
+  if (mag) { mag.rotation.set(-Math.PI / 2, 0, Math.PI / 2 + 0.25); register(mag, { type: "mag", id: "mag", title: L("Томруулдаг шил (M)", "Magnifying glass (M)") }); props.mag = mag; }
+  const sp = place("round_spectacles", 1.05, 0.74, 1.35, 1.0, DESK_Y + 0.023); if (sp) register(sp, { type: "deco", title: L("Нүдний шил", "Spectacles") });
   const pw = place("pocket_watch", 1.42, 0.98, 0.2, 1.4, DESK_Y + 0.012);
-  if (pw) { pw.rotation.x = -Math.PI / 2; register(pw, { type: "deco", title: "Халаасны цаг" }); props.watch = pw; }
+  if (pw) { pw.rotation.x = -Math.PI / 2; register(pw, { type: "deco", title: L("Халаасны цаг", "Pocket watch") }); props.watch = pw; }
 }
 const props = {};
 
@@ -846,11 +846,11 @@ function osdTex(text) {
 function buildTV() {
   const t = place("Television_01", -1.2, 0.36, 0.38, 1.0, DESK_Y);
   if (t) {
-    register(t, { type: "tv", id: "tv", title: "Хуучин зурагт" });
+    register(t, { type: "tv", id: "tv", title: L("Хуучин зурагт", "Old television") });
     // the screen: a slightly bulged CRT face with static / the tape, scanlines and flicker (shader)
     const g = new THREE.PlaneGeometry(0.362, 0.276, 24, 18), p = g.attributes.position;
     for (let i = 0; i < p.count; i++) { const u = p.getX(i) / 0.181, v = p.getY(i) / 0.138; p.setZ(i, 0.012 * (1 - 0.55 * u * u - 0.55 * v * v)); }
-    tv.uni = { uTime: { value: 0 }, uMode: { value: 0 }, uVideo: { value: null }, uOsd: { value: osdTex("ДОХИО АЛГА") } };
+    tv.uni = { uTime: { value: 0 }, uMode: { value: 0 }, uVideo: { value: null }, uOsd: { value: osdTex(L("ДОХИО АЛГА", "NO SIGNAL")) } };
     const mat = new THREE.ShaderMaterial({
       uniforms: tv.uni,
       vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
@@ -875,7 +875,7 @@ function buildTV() {
         "}"].join("\n")
     });
     const scr = new THREE.Mesh(g, mat); scr.position.set(-0.07, 0.258, 0.198); t.add(scr); tv.screen = scr;
-    scr.userData.pick = { type: "tv", id: "tv", title: "Хуучин зурагт", obj: t }; pickables.push(scr);
+    scr.userData.pick = { type: "tv", id: "tv", title: L("Хуучин зурагт", "Old television"), obj: t }; pickables.push(scr);
     // the screen lights the desk a little, flickering
     tv.light = new THREE.PointLight(0xa8c4ff, 0.25, 1.6, 2); tv.light.position.set(-0.07, 0.26, 0.45); t.add(tv.light);
   }
@@ -889,8 +889,8 @@ function buildTV() {
       scene.attach(tape);
       // two tapes on the desk: 1 = the video about me, 2 = a favourite song
       const defs = [
-        { id: "t1", kind: "video", label: "БИЧЛЭГ № 334", sub: "Хэргийн хүн", home: [-1.31, 0.79, 0.5], tint: null },
-        { id: "t2", kind: "song", label: (C.song && C.song.title) || "Дуу", sub: (C.song && C.song.artist) || "", home: [-1.42, 0.99, -0.35], tint: 0x8fa7c4 }
+        { id: "t1", kind: "video", label: L("БИЧЛЭГ № 334", "TAPE No. 334"), sub: L("Хэргийн хүн", "Person of interest"), home: [-1.31, 0.79, 0.5], tint: null },
+        { id: "t2", kind: "song", label: (C.song && C.song.title) || L("Дуу", "Song"), sub: (C.song && C.song.artist) || "", home: [-1.42, 0.99, -0.35], tint: 0x8fa7c4 }
       ];
       const copies = defs.map((d, n) => (n === 0 ? tape : tape.clone(true)));   // clone before any userData is attached
       defs.forEach((d, n) => {
@@ -906,12 +906,12 @@ function buildTV() {
         lab.rotation.x = -Math.PI / 2; lab.position.set(0, 0.0043, -0.012); t.add(lab);
         d.obj = t; d.home = { pos: new THREE.Vector3(d.home[0], DESK_Y + 0.0056, d.home[1]), quat: new THREE.Quaternion().setFromEuler(new THREE.Euler(0, d.home[2], 0)) };
         t.position.copy(d.home.pos); t.quaternion.copy(d.home.quat);
-        const title = d.kind === "video" ? "Кассет 1: бичлэг (дарж тоглуул)" : "Кассет 2: " + d.sub + ", " + d.label + " (дарж тоглуул)";
+        const title = d.kind === "video" ? L("Кассет 1: бичлэг (дарж тоглуул)", "Tape 1: video (click to play)") : L("Кассет 2: ", "Tape 2: ") + d.sub + ", " + d.label + L(" (дарж тоглуул)", " (click to play)");
         t.traverse((m) => { if (m.isMesh) { m.userData.pick = { type: "tape", id: d.id, title, obj: t }; pickables.push(m); } });
         tv.tapes.push(d);
       });
     }
-    pl.traverse((m) => { if (m.isMesh) { m.userData.pick = { type: "player", id: "player", title: "Кассет тоглуулагч (дарвал кассет гарна)", obj: pl }; pickables.push(m); } });
+    pl.traverse((m) => { if (m.isMesh) { m.userData.pick = { type: "player", id: "player", title: L("Кассет тоглуулагч (дарвал кассет гарна)", "Tape player (click to eject)"), obj: pl }; pickables.push(m); } });
   }
   if (C.video) {
     const v = document.createElement("video");
@@ -943,22 +943,22 @@ function insertTape(id) {
   moveTape(d, tv.slot, 1.3, () => { LC.audio.sfx("tape_in"); osdTex("▶ PLAY"); d.kind === "video" ? playVideo() : playSong(); });
 }
 function playVideo() {
-  if (!tv.video) { stopped(); UI.toast("Бичлэгийн файл алга (content.js → video)."); return; }
+  if (!tv.video) { stopped(); UI.toast(L("Бичлэгийн файл алга (content.js → video).", "Video file missing (content.js → video).")); return; }
   const a = LC.audio.get(); tv.video.muted = a.muted; tv.video.volume = a.volume; tv.video.currentTime = 0;
   tv.uni.uVideo.value = tv.vtex;
-  const go = () => { tv.state = "playing"; tv.uni.uMode.value = 1; setTimeout(() => { if (tv.state === "playing") osdTex(""); }, 2500); LC.audio.ambient(false); UI.markFound("tape1"); UI.toast("Бичлэг тоглож байна. Зурагт дээр дарж томоор үзнэ."); };
+  const go = () => { tv.state = "playing"; tv.uni.uMode.value = 1; setTimeout(() => { if (tv.state === "playing") osdTex(""); }, 2500); LC.audio.ambient(false); UI.markFound("tape1"); UI.toast(L("Бичлэг тоглож байна. Зурагт дээр дарж томоор үзнэ.", "The tape is playing. Click the TV to watch it big.")); };
   const p = tv.video.play();
   if (p && p.then) p.then(go).catch(() => { tv.video.muted = true; tv.video.play().then(go).catch(stopped); }); else go();
 }
 function playSong() {
   const S = C.song, au = tv.song;
-  if (!au || au.dataset.missing) { stopped(); osdTex("ФАЙЛ АЛГА"); UI.toast("Дууны файл алга: " + (S ? S.src : "content.js → song") + ". Өөрийн 8 секундын клипээ тэнд хийнэ."); return; }
+  if (!au || au.dataset.missing) { stopped(); osdTex(L("ФАЙЛ АЛГА", "NO FILE")); UI.toast(L("Дууны файл алга: ", "Song file missing: ") + (S ? S.src : "content.js → song")); return; }
   const a = LC.audio.get(); au.muted = a.muted; au.volume = a.volume;
   try { au.currentTime = S.start || 0; } catch (e) { /* not loaded yet */ }
   tv.uni.uVideo.value = tv.songTex; tv.songT0 = performance.now();
   const go = () => { tv.state = "playing"; tv.uni.uMode.value = 1; osdTex(""); LC.audio.ambient(false); UI.markFound("tape2"); UI.toast(S.artist + ", " + S.title); };
   const p = au.play();
-  if (p && p.then) p.then(go).catch(() => { stopped(); osdTex("ФАЙЛ АЛГА"); UI.toast("Дууг тоглуулж чадсангүй: " + S.src); }); else go();
+  if (p && p.then) p.then(go).catch(() => { stopped(); osdTex(L("ФАЙЛ АЛГА", "NO FILE")); UI.toast(L("Дууг тоглуулж чадсангүй: ", "Could not play the song: ") + S.src); }); else go();
 }
 function drawSong() {
   const S = C.song, au = tv.song, x = tv.songCv.getContext("2d"), W = 512, H = 384;
@@ -983,7 +983,7 @@ function ejectTape(then) {
   if (tv.video) tv.video.pause(); if (tv.song) tv.song.pause();
   tv.state = "ejecting"; tv.uni.uMode.value = 0; osdTex("⏏ EJECT"); LC.audio.sfx("tape_out");
   LC.audio.ambient(!LC.audio.get().muted);
-  moveTape(d, d.home, 1.0, () => { tv.cur = null; tv.state = "empty"; osdTex("ДОХИО АЛГА"); if (then) then(); });
+  moveTape(d, d.home, 1.0, () => { tv.cur = null; tv.state = "empty"; osdTex(L("ДОХИО АЛГА", "NO SIGNAL")); if (then) then(); });
 }
 function openTvBig() {
   if (!tv.cur || tv.cur.kind !== "video") { if (tv.cur) UI.toast(C.song.artist + ", " + C.song.title); return; }
@@ -1208,18 +1208,18 @@ function activate(d) {
     case "folder": UI.openFolder(d.id); break;
     case "map": UI.openMapBig(); break;
     case "place": UI.openPlace(d.id); break;
-    case "pin": locked = locked === d.id ? null : d.id; highlight(locked, true); LC.audio.sfx("click"); if (locked) UI.toast("Холбоотой баримтууд гэрэлтлээ."); break;
+    case "pin": locked = locked === d.id ? null : d.id; highlight(locked, true); LC.audio.sfx("click"); if (locked) UI.toast(L("Холбоотой баримтууд гэрэлтлээ.", "Linked evidence highlighted.")); break;
     case "string": UI.toast(d.why); LC.audio.sfx("click"); break;
-    case "mag": setLens(true); UI.toast("Томруулдаг шил: хулганаа хөдөлгөөд үз. M товчоор унтраана."); LC.audio.sfx("pick"); break;
+    case "mag": setLens(true); UI.toast(L("Томруулдаг шил: хулганаа хөдөлгөөд үз. M товчоор унтраана.", "Magnifying glass: move the mouse. Press M to turn it off.")); LC.audio.sfx("pick"); break;
     case "lamp": lampOn = !lampOn; setLamp(lampOn); LC.audio.sfx("lamp"); break;
     case "tape": insertTape(d.id); break;
-    case "player": if (tv.cur && !tv.anim) ejectTape(); else UI.toast("Тоглуулагч хоосон байна. Ширээн дээрх кассетын нэгийг дарж хий."); break;
-    case "tv": if (tv.cur && (tv.state === "playing" || tv.state === "ended")) openTvBig(); else UI.toast("Дохио алга. Кассетыг тоглуулагч руу хий."); break;
+    case "player": if (tv.cur && !tv.anim) ejectTape(); else UI.toast(L("Тоглуулагч хоосон байна. Ширээн дээрх кассетын нэгийг дарж хий.", "The player is empty. Click one of the tapes on the desk.")); break;
+    case "tv": if (tv.cur && (tv.state === "playing" || tv.state === "ended")) openTvBig(); else UI.toast(L("Дохио алга. Кассетыг тоглуулагч руу хий.", "No signal. Put a tape in the player.")); break;
     default: break;
   }
 }
 let lampOn = true;
-$("#btnLens").addEventListener("click", () => { setLens(!lens.on); if (lens.on && touchFirst) UI.toast("Хуруугаа дарж хөдөлгөхөд томруулна."); });
+$("#btnLens").addEventListener("click", () => { setLens(!lens.on); if (lens.on && touchFirst) UI.toast(L("Хуруугаа дарж хөдөлгөхөд томруулна.", "Press and move your finger to magnify.")); });
 document.addEventListener("keydown", (e) => {
   if (UI.isOpen() || e.target.closest("input,textarea")) return;
   if (e.key === "m" || e.key === "M") setLens(!lens.on);
@@ -1277,7 +1277,8 @@ function finishIntro(instant) {
   const i = $("#intro"); i.classList.add("out"); setTimeout(() => { i.hidden = true; }, 600);
   try { localStorage.setItem("lastcase-intro", "1"); } catch (e) { /* ignore */ }
   if (!touchFirst) setLens(true);
-  UI.toast(touchFirst ? "Баримт дээр дарж нээнэ. Хоосон газрыг чирч эргэн тойрноо харна." : "Хулганаар томруулж харна. Дарж нээнэ, чирч зөөнө. M = томруулдаг шил.");
+  if (UI.showGuide && UI.showGuide(false)) return;
+  UI.toast(touchFirst ? L("Баримт дээр дарж нээнэ. Хоосон газрыг чирч эргэн тойрноо харна.", "Tap a document to open it. Drag empty space to look around.") : L("Хулганаар томруулж харна. Дарж нээнэ, чирч зөөнө. M = томруулдаг шил.", "Hover to magnify. Click to open, drag to move. M = magnifying glass."));
 }
 $("#introSkip").addEventListener("click", () => finishIntro(true));
 $("#btnIntro").addEventListener("click", () => { ["#reader", "#folder", "#final", "#list"].forEach((s) => { $(s).hidden = true; }); playIntro(); });
@@ -1362,6 +1363,30 @@ function flow(c, html, X, Y, W, draw, news) {
       if (n.nodeType === 3) { const t = n.textContent.trim(); if (t) txt("26px " + FONT.serif, INK, t, 38); continue; }
       if (n.nodeType !== 1) continue;
       const tag = n.tagName, cls = n.getAttribute("class") || "";
+      if (/sbar/.test(cls) && tag === "DIV") {
+        const lab = n.querySelector(".sbar-l"), v = Math.max(0, Math.min(100, parseFloat((n.querySelector("b") || {}).textContent) || 0));
+        const y0 = y + 30, bx = X + W * 0.42, bw = W * 0.44;
+        c.font = "24px " + FONT.mono; c.fillStyle = INK; const yl = wrapM(c, lab ? lab.textContent : "", X, y0, W * 0.4, 30, draw);
+        if (draw) {
+          c.fillStyle = "rgba(60,40,30,.18)"; c.fillRect(bx, y0 - 18, bw, 18);
+          c.fillStyle = BLUE; c.fillRect(bx, y0 - 18, bw * v / 100, 18);
+          c.strokeStyle = "rgba(40,30,25,.6)"; c.lineWidth = 1.5; c.strokeRect(bx, y0 - 18, bw, 18);
+          c.font = "700 24px " + FONT.mono; c.fillStyle = RED; c.fillText(v + "%", bx + bw + 14, y0);
+        }
+        y = Math.max(yl, y0 + 14) + 4; continue;
+      }
+      if (tag === "UL" && /items/.test(cls)) {
+        for (const li of n.querySelectorAll("li")) {
+          const k = li.querySelector("b"), t = li.querySelector("span"), sm = li.querySelector("small");
+          const y0 = y + 30, main = t ? t.childNodes[0].textContent : li.textContent;
+          c.font = "700 20px " + FONT.mono; c.fillStyle = RED; const yk = wrapM(c, k ? k.textContent : "", X, y0, W * 0.27, 28, draw);
+          c.font = "25px " + FONT.serif; c.fillStyle = INK; let yv = wrapM(c, main, X + W * 0.3, y0, W * 0.7, 34, draw);
+          if (sm && sm.textContent.trim()) { c.font = "italic 21px " + FONT.serif; c.fillStyle = GREY; yv = wrapM(c, sm.textContent, X + W * 0.3, yv, W * 0.7, 30, draw); }
+          y = Math.max(yk, yv) + 2; leader(y - 18); y += 6;
+        }
+        y += 10; continue;
+      }
+      if (tag === "A") { if (/works-link/.test(cls)) continue; txt("700 22px " + FONT.mono, BLUE, "→ " + n.textContent, 32); y += 6; continue; }
       if (tag === "TABLE") {
         for (const tr of n.querySelectorAll("tr")) {
           const th = tr.querySelector("th"), td = tr.querySelector("td");
@@ -1374,6 +1399,7 @@ function flow(c, html, X, Y, W, draw, news) {
         }
         y += 14;
       } else if (tag === "H3" || tag === "H4") { y += 14; txt("700 28px " + FONT.mono, RED, n.textContent.toUpperCase(), 38); y += 4; }
+      else if (tag === "P" && /rp-sec/.test(cls)) { y += 18; txt("700 26px " + FONT.mono, RED, n.textContent.toUpperCase(), 38); if (draw) { c.fillStyle = "rgba(142,32,22,.5)"; c.fillRect(X, y - 26, W, 2); } y += 6; }
       else if (tag === "P") {
         const f = /hand/.test(cls) ? (/big/.test(cls) ? "36px " : "30px ") + FONT.hand : /mono|big/.test(cls) ? "700 25px " + FONT.mono : /small/.test(cls) ? "italic 19px " + FONT.serif : (news ? "24px " : "26px ") + FONT.serif;
         const col = /hand/.test(cls) ? BLUE : /small/.test(cls) ? GREY : INK;
@@ -1419,12 +1445,12 @@ function docCanvas(ev) {
   // edge wear
   const vg = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.45, W / 2, H / 2, Math.max(W, H) * 0.75); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(90,60,20,.28)"); x.fillStyle = vg; x.fillRect(0, 0, W, H);
   if (news) {
-    x.fillStyle = "#1e1b18"; x.font = "700 64px " + FONT.serif; x.textAlign = "center"; x.fillText("ӨДРИЙН СОНИН", W / 2, 110); x.textAlign = "left";
+    x.fillStyle = "#1e1b18"; x.font = "700 64px " + FONT.serif; x.textAlign = "center"; x.fillText(L("ӨДРИЙН СОНИН", "THE DAILY PAPER"), W / 2, 110); x.textAlign = "left";
     x.fillRect(X, 132, CW, 5); x.fillRect(X, 142, CW, 2);
     x.font = "700 48px " + FONT.serif; wrap(x, ev.title, X, 210, CW, 54, 2);
   } else {
     x.fillStyle = "#b8251f"; x.font = "700 30px " + FONT.mono; x.fillText(ev.file, X, 110);
-    x.fillStyle = "#6b5a4c"; x.font = "20px " + FONT.mono; x.fillText("ХЭРЭГ № 2026-334", W - X - 230, 110);
+    x.fillStyle = "#6b5a4c"; x.font = "20px " + FONT.mono; x.fillText(L("ХЭРЭГ № 2026-334", "CASE No. 2026-334"), W - X - 250, 110);
     x.fillStyle = "#1d1714"; x.font = "700 44px " + FONT.mono; wrap(x, ev.title, X, 180, CW - 40, 52, 2);
     x.fillStyle = "rgba(40,30,25,.7)"; x.fillRect(X, 228, CW, 3); x.fillRect(X, 236, CW, 1);
   }
@@ -1441,12 +1467,12 @@ function coverCanvas(cs, open) {
   const vg = x.createRadialGradient(W / 2, H / 2, 300, W / 2, H / 2, 820); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(70,40,10,.35)"); x.fillStyle = vg; x.fillRect(0, 0, W, H);
   x.save(); x.translate(90, 180); x.rotate(-0.012);
   photoBg(x, IMG.paper, 560, 170, "rgba(255,255,255,.72)", "screen");
-  x.fillStyle = "#b8251f"; x.font = "700 30px " + FONT.mono; x.fillText("ХЭРГИЙН ХАВТАС № 2026-334-" + cs.no, 26, 52);
-  x.fillStyle = "#1f2a44"; x.font = "52px " + FONT.hand; x.fillText(cs.title, 26, 130);
+  x.fillStyle = "#b8251f"; x.font = "700 30px " + FONT.mono; x.fillText(L("ХЭРГИЙН ХАВТАС № 2026-334-", "CASE FILE No. 2026-334-") + cs.no, 26, 52);
+  x.fillStyle = "#1f2a44"; let cf = 52; do { x.font = cf + "px " + FONT.hand; cf -= 2; } while (x.measureText(cs.title).width > 510 && cf > 28); x.fillText(cs.title, 26, 130);
   x.restore();
-  x.fillStyle = "rgba(40,25,10,.55)"; x.font = "26px " + FONT.mono; x.fillText("ХЭРЭГ: THE LAST CASE", 90, 460); x.fillText("ХЭРГИЙН ХҮН: " + C.person.name.toUpperCase(), 90, 504);
+  x.fillStyle = "rgba(40,25,10,.55)"; x.font = "26px " + FONT.mono; x.fillText(L("ХЭРЭГ: THE LAST CASE", "CASE: THE LAST CASE"), 90, 460); x.fillText(L("ХЭРГИЙН ХҮН: ", "PERSON: ") + C.person.name.toUpperCase(), 90, 504);
   x.strokeStyle = "rgba(40,25,10,.4)"; x.lineWidth = 2; for (let i = 0; i < 5; i++) { x.beginPath(); x.moveTo(90, 580 + i * 56); x.lineTo(W - 90, 580 + i * 56); x.stroke(); }
-  stamp(x, open ? "НЭЭГДСЭН" : "НУУЦ", W - 250, H - 190, 74, open ? "rgba(40,120,70,.85)" : "rgba(178,34,30,.85)", -0.16);
+  stamp(x, open ? L("НЭЭГДСЭН", "OPENED") : L("НУУЦ", "SECRET"), W - 250, H - 190, 74, open ? "rgba(40,120,70,.85)" : "rgba(178,34,30,.85)", -0.16);
   return c;
 }
 function plainKraft(seed) { const c = canvas(512, 660), x = c.getContext("2d"); photoBg(x, IMG.kraft, 512, 660, "#e3c288"); return c; }
@@ -1455,13 +1481,13 @@ function idCardCanvas(cs) {
   const W = 1000, H = 680, c = canvas(W, H), x = c.getContext("2d"), P = C.person;
   photoBg(x, IMG.paper, W, H, "rgba(246,236,212,.55)", "screen");
   x.strokeStyle = "rgba(90,55,30,.6)"; x.lineWidth = 2; x.strokeRect(18, 18, W - 36, H - 36);
-  x.fillStyle = "#7a2a1a"; x.font = "700 30px " + FONT.mono; x.fillText("ХЭРГИЙН ХҮНИЙ ҮНЭМЛЭХ", 50, 76); x.fillText("№ 334-" + cs.no, W - 250, 76);
+  x.fillStyle = "#7a2a1a"; x.font = "700 30px " + FONT.mono; x.fillText(L("ХЭРГИЙН ХҮНИЙ ҮНЭМЛЭХ", "PERSON OF INTEREST ID"), 50, 76); x.fillText("№ 334-" + cs.no, W - 250, 76);
   x.fillRect(50, 96, W - 100, 2);
   const im = imgSrc(cs.photo || P.photo) || IMG.fp;
   x.save(); x.translate(60, 130); x.rotate(-0.025); x.fillStyle = "#f4efe4"; x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 10; x.fillRect(0, 0, 270, 340); x.shadowColor = "transparent";
   if (im) { x.filter = "sepia(.45) contrast(1.05)"; coverImage(x, im, 12, 12, 246, 280); x.filter = "none"; }
-  x.fillStyle = "#2b2622"; x.font = "24px " + FONT.hand; x.textAlign = "center"; x.fillText(cs.caption || "Хэргийн хүн", 135, 326); x.textAlign = "left"; x.restore();
-  const rows = [["ОВОГ НЭР", P.name], ["ТӨРСӨН ГАЗАР", "Дундговь, Сайнцагаан"], ["СУРГУУЛЬ", "СЭЗИС, МСМТ, 3-р курс"], ["АНГИЛАЛ", cs.title]];
+  x.fillStyle = "#2b2622"; x.font = "24px " + FONT.hand; x.textAlign = "center"; x.fillText(cs.caption || L("Хэргийн хүн", "Person of interest"), 135, 326); x.textAlign = "left"; x.restore();
+  const rows = [[L("ОВОГ НЭР", "NAME"), P.name], [L("ТӨРСӨН ГАЗАР", "BORN IN"), P.born], [L("СУРГУУЛЬ", "SCHOOL"), P.school], [L("АНГИЛАЛ", "SECTION"), cs.title]];
   rows.forEach(([k, v], i) => { const yy = 150 + i * 88; x.fillStyle = "#7a6a5c"; x.font = "20px " + FONT.mono; x.fillText(k, 380, yy); x.fillStyle = "#1f2a44"; x.font = "700 30px " + FONT.mono; x.fillText(v, 380, yy + 38); x.fillStyle = "rgba(60,40,30,.45)"; for (let xx = 380; xx < W - 60; xx += 8) x.fillRect(xx, yy + 50, 3, 3); });
   if (IMG.fp) [[34, 92], [77, 92], [126, 92], [172, 92]].forEach(([cx, cy], i) => { x.globalCompositeOperation = "multiply"; x.drawImage(IMG.fp, cx - 20, cy - 28, 40, 56, 60 + i * 96, 520, 80, 112); x.globalCompositeOperation = "source-over"; x.strokeStyle = "rgba(90,55,30,.5)"; x.strokeRect(60 + i * 96, 520, 80, 112); });
   x.save(); x.translate(W - 140, H - 130); x.rotate(-0.25); x.strokeStyle = "rgba(110,30,90,.7)"; x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 82, 0, Math.PI * 2); x.stroke(); x.lineWidth = 2; x.beginPath(); x.arc(0, 0, 70, 0, Math.PI * 2); x.stroke();
@@ -1478,11 +1504,11 @@ function envelopeCanvas(cs) {
   const btn = (yy) => { const g = x.createRadialGradient(W / 2 - 6, yy - 6, 4, W / 2, yy, 30); g.addColorStop(0, "#d9b47a"); g.addColorStop(1, "#5c3e1c"); x.fillStyle = g; x.beginPath(); x.arc(W / 2, yy, 28, 0, Math.PI * 2); x.fill(); x.fillStyle = "#3a2610"; x.beginPath(); x.arc(W / 2, yy, 8, 0, Math.PI * 2); x.fill(); };
   btn(300); btn(420);
   x.strokeStyle = "#efe3c4"; x.lineWidth = 4; x.beginPath(); x.moveTo(W / 2, 300); x.bezierCurveTo(W / 2 + 60, 330, W / 2 - 50, 380, W / 2, 420); x.moveTo(W / 2, 420); x.bezierCurveTo(W / 2 - 70, 400, W / 2 + 40, 340, W / 2, 300); x.stroke();
-  x.save(); x.translate(80, 520); x.rotate(-0.05); x.strokeStyle = "#a8231c"; x.lineWidth = 6; x.strokeRect(0, 0, 420, 76); x.fillStyle = "#a8231c"; x.font = "700 46px " + FONT.mono; x.fillText("НОТЛОХ БАРИМТ", 18, 56); x.restore();
-  [["ХЭРГИЙН №", "2026-334-" + cs.no], ["ОГНОО", todayStr()], ["АГУУЛГА", cs.title]].forEach(([k, v], i) => {
+  x.save(); x.translate(80, 520); x.rotate(-0.05); x.strokeStyle = "#a8231c"; x.lineWidth = 6; x.strokeRect(0, 0, 420, 76); x.fillStyle = "#a8231c"; x.font = "700 46px " + FONT.mono; x.fillText(L("НОТЛОХ БАРИМТ", "EVIDENCE"), 18, 56); x.restore();
+  [[L("ХЭРГИЙН №", "CASE No."), "2026-334-" + cs.no], [L("ОГНОО", "DATE"), todayStr()], [L("АГУУЛГА", "CONTENT"), cs.title]].forEach(([k, v], i) => {
     const yy = 680 + i * 80; x.fillStyle = "#5a3e24"; x.font = "22px " + FONT.mono; x.fillText(k, 80, yy); x.fillStyle = "#1f2a44"; x.font = "34px " + FONT.hand; x.fillText(v, 290, yy); x.fillStyle = "rgba(60,35,15,.6)"; x.fillRect(80, yy + 14, W - 160, 2);
   });
-  stamp(x, "НУУЦ", W - 170, H - 70, 40, "rgba(168,35,28,.8)", -0.24);
+  stamp(x, L("НУУЦ", "SECRET"), W - 170, H - 70, 40, "rgba(168,35,28,.8)", -0.24);
   return c;
 }
 function tagCanvas(note) {
@@ -1490,39 +1516,48 @@ function tagCanvas(note) {
   x.beginPath(); x.moveTo(90, 0); x.lineTo(W - 90, 0); x.lineTo(W, 80); x.lineTo(W, H); x.lineTo(0, H); x.lineTo(0, 80); x.closePath(); x.clip();
   photoBg(x, IMG.kraft, W, H, "rgba(240,215,160,.55)", "screen");
   x.fillStyle = "#f3ead6"; x.beginPath(); x.arc(W / 2, 56, 30, 0, Math.PI * 2); x.fill(); x.fillStyle = "#2a1c10"; x.beginPath(); x.arc(W / 2, 56, 15, 0, Math.PI * 2); x.fill();
-  x.fillStyle = "#7a2a1a"; x.font = "700 22px " + FONT.mono; x.fillText("МӨРДӨГЧИЙН ТЭМДЭГЛЭЛ", 30, 140);
-  x.fillStyle = "#1f2a44"; x.font = "36px " + FONT.hand; wrap(x, note || "хоосон", 30, 210, W - 60, 50, 7);
+  x.fillStyle = "#7a2a1a"; x.font = "700 22px " + FONT.mono; x.fillText(L("МӨРДӨГЧИЙН ТЭМДЭГЛЭЛ", "DETECTIVE’S NOTE"), 30, 140);
+  x.fillStyle = "#1f2a44"; x.font = "36px " + FONT.hand; wrap(x, note || L("хоосон", "empty"), 30, 210, W - 60, 50, 7);
   return c;
 }
 function reportCanvas(cs) {
   const W = 1100, P = C.person, qa = cs.iv.qa.filter((q) => q[1] && String(q[1]).trim());
-  const meas = canvas(W, 10).getContext("2d"); let need = 560;
-  qa.forEach((q) => { meas.font = "24px " + FONT.mono; need = wrapM(meas, "А" + ". " + q[0], 90, need, W - 180, 40, false) + 6; meas.font = "27px " + FONT.mono; need = wrapM(meas, "Х. " + q[1], 90, need, W - 180, 40, false) + 26; });
-  const H = Math.max(Math.round(W * 1.414), need + 260), c = canvas(W, H), x = c.getContext("2d");
+  const secHTML = D.sectionsHTML ? D.sectionsHTML(cs).replace(/<a [^>]*works-link[^>]*>.*?<\/a>/g, "") : "";
+  const A = L("А", "Q"), X = L("Х", "A");
+  // the page stays close to A4: the structured sections always fit, the interview answers only as far as there is room
+  // (the full text is one click away, "Read as text")
+  const meas = canvas(W, 10).getContext("2d"); const secEnd = flow(meas, secHTML, 90, 540, W - 180, false) + 40;
+  const ends = []; let e = secEnd + 50;
+  for (const q of qa) { meas.font = "24px " + FONT.mono; e = wrapM(meas, A + ". " + q[0], 90, e, W - 180, 40, false) + 6; meas.font = "27px " + FONT.mono; e = wrapM(meas, X + ". " + q[1], 90, e, W - 180, 40, false) + 26; ends.push(e); }
+  const A4 = Math.round(W * 1.414), H = Math.max(A4, secEnd + 420, Math.min((ends.length ? ends[ends.length - 1] : secEnd) + 300, Math.round(A4 * 1.3)));
+  const c = canvas(W, H), x = c.getContext("2d");
+  let shown = 0; while (shown < ends.length && ends[shown] <= H - 250) shown++;
   photoBg(x, IMG.paper, W, H, "rgba(255,250,238,.55)", "screen");
   const vg = x.createRadialGradient(W / 2, H / 2, 500, W / 2, H / 2, 1100); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(90,60,20,.25)"); x.fillStyle = vg; x.fillRect(0, 0, W, H);
   // seal + heading
   x.save(); x.translate(160, 160); x.rotate(-0.15); x.strokeStyle = "rgba(31,42,68,.75)"; x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 70, 0, Math.PI * 2); x.stroke(); x.lineWidth = 2; x.beginPath(); x.arc(0, 0, 58, 0, Math.PI * 2); x.stroke();
-  x.fillStyle = "rgba(31,42,68,.8)"; x.font = "700 40px " + FONT.serif; x.textAlign = "center"; x.fillText(cs.no, 0, 14); x.font = "700 11px " + FONT.mono; x.fillText("МӨРДӨН БАЙЦААЛТ", 0, -32); x.textAlign = "left"; x.restore();
-  x.fillStyle = "#6b5a54"; x.font = "20px " + FONT.mono; x.fillText("ХЭРГИЙН ХАВТАС № 2026-334-" + cs.no, 270, 120);
-  x.fillStyle = "#1d1714"; x.font = "700 60px " + FONT.serif; x.fillText("ХЭРГИЙН ТАЙЛАН", 270, 186);
-  x.fillStyle = "#6b5a54"; x.font = "20px " + FONT.mono; x.fillText("БАЙЦААЛТЫН ТЭМДЭГЛЭЛ", 270, 222);
+  x.fillStyle = "rgba(31,42,68,.8)"; x.font = "700 40px " + FONT.serif; x.textAlign = "center"; x.fillText(cs.no, 0, 14); x.font = "700 11px " + FONT.mono; x.fillText(L("МӨРДӨН БАЙЦААЛТ", "INVESTIGATION"), 0, -32); x.textAlign = "left"; x.restore();
+  x.fillStyle = "#6b5a54"; x.font = "20px " + FONT.mono; x.fillText(L("ХЭРГИЙН ХАВТАС № 2026-334-", "CASE FILE No. 2026-334-") + cs.no, 270, 120);
+  x.fillStyle = "#1d1714"; let tf = 60; do { x.font = "700 " + tf + "px " + FONT.serif; tf -= 2; } while (x.measureText(cs.title.toUpperCase()).width > W - 360 && tf > 30); x.fillText(cs.title.toUpperCase(), 270, 186);
+  x.fillStyle = "#6b5a54"; x.font = "20px " + FONT.mono; x.fillText(L("ХЭРГИЙН ТАЙЛАН", "CASE REPORT"), 270, 222);
   x.fillStyle = "#3a2a20"; x.fillRect(90, 262, W - 180, 4); x.fillRect(90, 272, W - 180, 1.5);
-  [["ХЭРГИЙН ХҮН", P.name], ["АНГИЛАЛ", cs.title], ["БАЙЦААСАН", "мөрдөгч (та)"], ["ОГНОО", todayStr()]].forEach(([k, v], i) => {
+  [[L("ХЭРГИЙН ХҮН", "PERSON"), P.name], [L("АНГИЛАЛ", "SECTION"), cs.title], [L("БАЙЦААСАН", "INTERVIEWED BY"), L("мөрдөгч (та)", "the detective (you)")], [L("ОГНОО", "DATE"), todayStr()]].forEach(([k, v], i) => {
     const xx = 90 + (i % 2) * 470, yy = 330 + Math.floor(i / 2) * 92;
     x.fillStyle = "#7a6a5c"; x.font = "19px " + FONT.mono; x.fillText(k, xx, yy); x.fillStyle = "#1f2a44"; x.font = "700 28px " + FONT.mono; x.fillText(v, xx, yy + 38); x.fillStyle = "rgba(60,40,30,.55)"; x.fillRect(xx, yy + 50, 430, 2);
   });
-  x.fillStyle = "#7a2a1a"; x.font = "700 24px " + FONT.mono; x.fillText("МЭДҮҮЛЭГ", 90, 540);
-  let y = 590;
-  x.strokeStyle = "rgba(70,100,160,.3)"; x.lineWidth = 1.5; for (let ly = 600; ly < H - 220; ly += 40) { x.beginPath(); x.moveTo(90, ly); x.lineTo(W - 90, ly); x.stroke(); }
-  if (!qa.length) { x.fillStyle = "#6b5a54"; x.font = "26px " + FONT.mono; x.fillText("Мэдүүлэг хараахан бүртгэгдээгүй.", 90, y); }
-  qa.forEach((q, n) => {
-    x.fillStyle = "#6b5a54"; x.font = "24px " + FONT.mono; y = wrapM(x, "А" + (n + 1) + ". " + q[0], 90, y, W - 180, 40, true) + 6;
-    x.fillStyle = "#1f2a44"; x.font = "27px " + FONT.mono; y = wrapM(x, "Х. " + q[1], 90, y, W - 180, 40, true) + 26;
+  // the structured part first (facts, skill bars, works, achievements): what a recruiter looks for
+  let y = flow(x, secHTML, 90, 540, W - 180, true) + 40;
+  x.fillStyle = "#7a2a1a"; x.font = "700 24px " + FONT.mono; x.fillText(L("МЭДҮҮЛЭГ", "INTERVIEW"), 90, y); y += 50;
+  x.strokeStyle = "rgba(70,100,160,.3)"; x.lineWidth = 1.5; for (let ly = y + 10; ly < H - 220; ly += 40) { x.beginPath(); x.moveTo(90, ly); x.lineTo(W - 90, ly); x.stroke(); }
+  if (!qa.length) { x.fillStyle = "#6b5a54"; x.font = "26px " + FONT.mono; x.fillText(L("Мэдүүлэг хараахан бүртгэгдээгүй.", "No statement recorded yet."), 90, y); }
+  qa.slice(0, shown).forEach((q, n) => {
+    x.fillStyle = "#6b5a54"; x.font = "24px " + FONT.mono; y = wrapM(x, A + (n + 1) + ". " + q[0], 90, y, W - 180, 40, true) + 6;
+    x.fillStyle = "#1f2a44"; x.font = "27px " + FONT.mono; y = wrapM(x, X + ". " + q[1], 90, y, W - 180, 40, true) + 26;
   });
-  x.fillStyle = "#1f2a44"; x.font = "54px " + FONT.hand; x.save(); x.translate(90, H - 150); x.rotate(-0.06); x.fillText(P.name.split(" ").pop(), 0, 0); x.restore();
-  x.fillStyle = "#6b5a54"; x.fillRect(90, H - 128, 360, 2); x.font = "16px " + FONT.mono; x.fillText("мэдүүлэг өгсөн хүний гарын үсэг", 90, H - 104);
-  stamp(x, "НЭЭГДСЭН", W - 260, H - 140, 46, "rgba(40,120,70,.85)", -0.17);
+  if (shown < qa.length) { x.fillStyle = "#7a2a1a"; x.font = "italic 24px " + FONT.serif; wrapM(x, L("… дахиад " + (qa.length - shown) + " хариулт: «Текстээр унших» товчоор бүтнээр нь уншина.", "… " + (qa.length - shown) + " more answers: press “Read as text” to read them all."), 90, y + 4, W - 180, 34, true); }
+  x.fillStyle = "#1f2a44"; x.font = "54px " + FONT.hand; x.save(); x.translate(90, H - 150); x.rotate(-0.06); x.fillText(L(P.name.split(" ").pop(), P.name.split(" ")[0]), 0, 0); x.restore();
+  x.fillStyle = "#6b5a54"; x.fillRect(90, H - 128, 360, 2); x.font = "16px " + FONT.mono; x.fillText(L("мэдүүлэг өгсөн хүний гарын үсэг", "signature of the person interviewed"), 90, H - 104);
+  stamp(x, L("НЭЭГДСЭН", "OPENED"), W - 260, H - 140, 46, "rgba(40,120,70,.85)", -0.17);
   x.save(); x.globalAlpha = 0.09; stamp(x, "CONFIDENTIAL", W / 2, H / 2, 96, "rgba(168,35,28,1)", -0.42); x.restore();
   return c;
 }
@@ -1633,7 +1668,7 @@ function inspectEvidence(id, srcMesh) {
   const m = sheet(cnv, w, ev.note ? 0.0008 : 0.0035);
   const g = new THREE.Group(); g.add(m);
   beginInspect(g, srcMesh, w, m.userData.size[1], "doc");
-  UI.markFound(id); if (ev.hidden) UI.toast("Далд тэмдэглэл олдлоо!");
+  UI.markFound(id); if (ev.hidden) UI.toast(L("Далд тэмдэглэл олдлоо!", "You found a hidden note!"));
   const links = [...new DOMParser().parseFromString(ev.html, "text/html").querySelectorAll("a[href]")];
   $("#inspLinks").innerHTML = links.map((a) => '<a class="paper-tab" target="_blank" rel="noopener" href="' + D.esc(a.getAttribute("href")) + '">' + D.esc(a.textContent) + "</a>").join("");
   $("#inspBar").hidden = false; $("#inspBar").dataset.ev = id;
