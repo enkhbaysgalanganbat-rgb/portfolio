@@ -1,0 +1,5 @@
+_old-*.zip
+.DS_Store
+Thumbs.db
+.vscode/
+assets/photo/ism.jpg.png

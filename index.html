@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>THE LAST CASE, Ганбатын Энхбаясгалан</title>
+  <meta name="description" content="THE LAST CASE, Ганбатын Энхбаясгалан (СЭЗИС, МСМТ) портфолио: 3D мөрдөн байцаалтын өрөөнд түүнийг олж танина уу.">
+  <meta name="theme-color" content="#0A0708">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230A0708'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23C2302A'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <!-- three.js is in ./vendor (no CDN needed). GLTFLoader imports "three" by name, so map it here. -->
+  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/" } }</script>
+</head>
+<body>
+  <header id="hud">
+    <div class="plate" aria-label="THE LAST CASE, хэрэг № 2026-334"><b>THE LAST CASE</b><small>Хэрэг № 2026-334</small></div>
+    <nav id="caseTabs" class="case-tabs" aria-label="Хэргийн хавтаснууд"></nav>
+    <div id="evTag" class="ev-tag" aria-live="polite"></div>
+    <div class="keys">
+      <button type="button" id="btnContact" class="key" aria-label="Холбоо барих"><i>@</i><span>Холбоо</span></button>
+      <button type="button" id="btnList" class="key" aria-label="Бүх баримтын жагсаалт (L)"><i>≡</i><span>Жагсаалт</span></button>
+      <button type="button" id="btnLens" class="key" aria-pressed="false" aria-label="Томруулдаг шил (M)"><i>◎</i><span>Луп</span></button>
+      <button type="button" id="btnSound" class="key" aria-pressed="true" aria-label="Дуу асаах/унтраах"><i>♪</i><span>Дуу</span></button>
+      <label class="vol"><span class="sr-only">Дууны хүч</span><input id="vol" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+      <button type="button" id="btnIntro" class="key" aria-label="Танилцуулгыг дахин үзэх"><i>▶</i><span>Интро</span></button>
+      <button type="button" id="btnRestart" class="key" aria-label="Мөрдөн байцаалтыг дахин эхлэх"><i>↺</i><span>Шинэ</span></button>
+    </div>
+  </header>
+
+  <!-- the 3D room (scene3d.js puts a <canvas> here) -->
+  <main id="stage"></main>
+  <footer id="foot">
+    <p class="memo"><span class="memo-k">Тэмдэглэл:</span> <span id="footHint"></span></p>
+    <button type="button" id="btnCloseCase" class="close-case" hidden>Хэргийг хаах</button>
+    <button type="button" id="btnCredits" class="foot-link">Эх сурвалж</button>
+  </footer>
+  <div id="tip" hidden></div>
+  <!-- bars under the thing you are holding (3D) -->
+  <div id="inspBar" class="insp-bar" hidden><span id="inspLinks"></span><button type="button" class="paper-tab" id="inspText">Текстээр унших</button><button type="button" class="paper-tab" id="inspBack">Буцааж тавих</button></div>
+  <div id="caseBar" class="insp-bar" hidden><button type="button" class="paper-tab" id="cbPrev"></button><button type="button" class="paper-tab side" id="cbLeft">Зүүн тал</button><button type="button" class="paper-tab side" id="cbRight">Баруун тал</button><button type="button" class="paper-tab" id="cbText">Текстээр унших</button><button type="button" class="paper-tab" id="cbClose">Хавтсыг хаах</button><button type="button" class="paper-tab" id="cbNext"></button></div>
+  <div id="pzPanel" hidden><div class="slip" id="slip3"></div></div>
+
+  <div id="loading">
+    <p class="mono">THE LAST CASE</p>
+    <div class="load-track"><i id="loadBar"></i></div>
+    <p id="loadText" class="mono small-l">Өрөөг бэлдэж байна…</p>
+  </div>
+
+  <!-- intro: the scene does the light and the shadow; this layer only holds the title and the skip button -->
+  <div id="intro" hidden>
+    <p id="introTitle">THE INVESTIGATION BEGINS.</p>
+    <button type="button" id="introSkip">Алгасах</button>
+  </div>
+
+  <div id="closed" hidden role="dialog" aria-modal="true" aria-labelledby="closedTitle">
+    <div class="closed-file">
+      <p class="typed small-caps">Хэргийн хавтас № 2026-334</p>
+      <h2 id="closedTitle" class="typed">THE LAST CASE</h2>
+      <p class="typed">Хэргийн хүн: Ганбатын Энхбаясгалан</p>
+      <p class="typed">Нээгдсэн хавтас: 6 / 6</p>
+      <div class="big-stamp" aria-hidden="true"><b>ХЭРЭГ ХААГДСАН</b><small>CASE CLOSED</small></div>
+      <p class="hand closing-line">Every clue tells a story. This was mine.</p>
+      <div class="closed-ctl">
+        <button type="button" id="closedReport" class="paper-tab">Тайлан ба холбоо барих</button>
+        <button type="button" id="closedBack" class="paper-tab">Өрөө рүү буцах</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reader" hidden role="dialog" aria-modal="true" aria-labelledby="readerTitle">
+    <div id="readerSheet" class="sheet">
+      <button type="button" id="readerClose" class="x" aria-label="Хаах">×</button>
+      <div class="sheet-head"><span id="readerFile" class="mono"></span></div>
+      <h3 id="readerTitle"></h3>
+      <div id="readerBody" class="sheet-body"></div>
+      <div id="readerStamp" class="sheet-stamp"></div>
+    </div>
+  </div>
+
+  <div id="folder" hidden role="dialog" aria-modal="true" aria-label="Хэргийн хавтас">
+    <div class="dossier" id="dossier">
+      <div class="d-back"><div class="d-page" id="dPage" tabindex="-1"></div></div>
+      <div class="d-cover" id="dCover">
+        <div class="d-front" id="dFront"></div>
+        <div class="d-inside" id="dInside"></div>
+      </div>
+      <button type="button" id="folderClose" class="x" aria-label="Хаах">×</button>
+    </div>
+  </div>
+
+  <div id="final" hidden role="dialog" aria-modal="true" aria-label="Эцсийн тайлан">
+    <div class="sheet final-sheet">
+      <button type="button" id="finalClose" class="x" aria-label="Хаах">×</button>
+      <div id="finalBody" class="sheet-body"></div>
+    </div>
+  </div>
+
+  <div id="list" hidden role="dialog" aria-modal="true" aria-labelledby="listTitle">
+    <div class="sheet">
+      <button type="button" id="listClose" class="x" aria-label="Хаах">×</button>
+      <div class="sheet-head"><span class="mono">ХЭРГИЙН БҮРТГЭЛ</span></div>
+      <h3 id="listTitle">Бүх баримт</h3>
+      <div id="listBody" class="sheet-body"></div>
+      <p class="small credits">Зураг, 3D: Poly Haven (CC0), CRT зурагт, кассет тоглуулагч, ширээний чийдэн, томруулдаг шил, нүдний шил, халаасны цаг, мод ба шавардлагын бүтэц. Wikimedia Commons, Монголын рельеф газрын зураг (CC BY-SA 3.0), Сүхбаатарын талбай (CC0), волейбол (нийтийн өмч), корк самбар (CC BY-SA 4.0), хуучин цаас ба крафт цаас (нийтийн өмч). Сүүдрийн хүний силуэт, mug shot, хурууны хээний карт: өөрийн зураг.</p>
+      <p class="small credits">Дуу: Wikimedia Commons. Хаалга шажигнах, хаалга хаах, хуудас эргүүлэх, толь бичиг, кассет тоглуулагч, унтраалга, бөмбөр цохих чимээ, бороо цонхонд, ханын цаг (нийтийн өмч). Бичгийн машины хонх (CC0, _stubb). Бичгийн машин (CC BY 4.0, Work With Sounds / Konrad Gutkowski). Тамга дарах (CC BY 3.0, Subhashish Panigrahi). Алхаа (CC BY-SA 4.0, MaksimPinigin).</p>
+      <p class="small credits">Коридор: Poly Haven (CC0) их цаг, толь, зургийн жааз, сандал, ширээ, модон хавтан, шал. Ханын цаас: Damask pattern grey wallpaper (Wikimedia Commons, CC BY-SA 4.0), Alfred Peats Prize Wallpaper, ca. 1910 (Cooper Hewitt, нийтийн өмч). Кассетийн хөгжим: Erik Satie, Gymnopédie No. 1, Robin Alciatore (Musopen, нийтийн өмч). 2 дахь кассет: J. S. Bach, Toccata and Fugue in D minor, BWV 565-ын эхлэл (нийтийн өмч), органы дууг кодоор нийлэгжүүлсэн.</p>
+      <p class="small credits">Хэргийн гэрэл зургууд (СЭЗИС, волейболын баг, Deep Learning UB, KadrLink, Networking, Password Day): өөрийн архиваас. Эконометрик судалгааны слайд: «Статистик-2026» ЭШБХ-ын илтгэл (4 хүний баг).</p>
+    </div>
+  </div>
+
+  <div id="fallback" hidden>
+    <div class="sheet">
+      <h3>3D өрөөг ачаалж чадсангүй</h3>
+      <p id="fallbackWhy">Хөтөч WebGL дэмжихгүй, эсвэл файлыг шууд (file://) нээсэн байна. VS Code-ийн Live Server эсвэл Netlify/Vercel-ээр нээнэ үү.</p>
+      <p>Доорх жагсаалтаар бүх баримт, хавтсыг үзэж болно.</p>
+      <button type="button" class="lnk" onclick="LC.ui.openList()">Жагсаалт нээх</button>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript><p style="padding:24px;color:#fff">Энэ портфолио JavaScript шаардлагатай.</p></noscript>
+
+  <script src="content.js"></script>
+  <script src="geo.js"></script>
+  <script src="data.js"></script>
+  <script src="audio.js"></script>
+  <script src="puzzles.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // if the 3D room can't start (old browser, no WebGL, opened as file://) the list still gives everything
+    window.__sceneFail = function () { document.getElementById("loading").hidden = true; document.getElementById("fallback").hidden = false; };
+    if (location.protocol === "file:") setTimeout(window.__sceneFail, 0);
+    setTimeout(function () { if (!window.__sceneOK && document.getElementById("loadBar").style.width === "") window.__sceneFail(); }, 15000);
+  </script>
+  <script type="module" src="scene3d.js"></script>
+</body>
+</html>
