@@ -433,7 +433,9 @@
     return C.projects.map(function (p, k) {
       var imgs = (p.images && p.images.length ? p.images : (p.image ? [p.image] : []));
       var fig = imgs.length
-        ? '<img src="' + esc(imgs[0]) + '" alt="' + esc(p.title) + '" loading="lazy">' + (imgs.length > 1 ? '<div class="wk-thumbs">' + imgs.map(function (src, j) { return '<button type="button" data-img="' + esc(src) + '"' + (j ? "" : ' class="on"') + ' aria-label="' + esc(p.title) + " " + (j + 1) + '"><img src="' + esc(src) + '" alt=""></button>'; }).join("") + "</div>" : "")
+        ? '<div class="wk-pic" data-n="' + imgs.length + '" data-i="0"><img src="' + esc(imgs[0]) + '" alt="' + esc(p.title) + " 1/" + imgs.length + '" loading="lazy">' +
+          (imgs.length > 1 ? '<button type="button" class="wk-pnav prev" data-step="-1" aria-label="' + L("Өмнөх зураг", "Previous picture") + '">‹</button><button type="button" class="wk-pnav next" data-step="1" aria-label="' + L("Дараах зураг", "Next picture") + '">›</button><span class="wk-count">1 / ' + imgs.length + "</span>" : "") + "</div>" +
+          (imgs.length > 1 ? '<div class="wk-thumbs">' + imgs.map(function (src, j) { return '<button type="button" data-img="' + esc(src) + '" data-j="' + j + '"' + (j ? "" : ' class="on"') + ' aria-label="' + esc(p.title) + " " + (j + 1) + '"><img src="' + esc(src) + '" alt="" loading="lazy"></button>'; }).join("") + "</div>" : "")
         : '<div class="wk-ph" style="--h:' + (p.hue || 30) + '"><b>' + esc(initials(p.title)) + "</b><span>" + esc(p.title) + "</span></div>";
       var links = (p.link ? '<a class="wk-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.linkLabel || L("Сайт нээх", "Open site")) + " ↗</a>" : "") +
         (p.repo ? '<a class="wk-btn ghost" href="' + esc(p.repo) + '" target="_blank" rel="noopener">GitHub ↗</a>' : "");
@@ -464,17 +466,36 @@
   $("#wkNext").addEventListener("click", function () { wkGo(wk.i + 1); LC.audio.sfx("click"); });
   $("#wkDots").addEventListener("click", function (e) { var b = e.target.closest("[data-go]"); if (b) wkGo(+b.dataset.go); });
   $("#worksClose").addEventListener("click", closeWorks);
+  // pictures inside one work: arrows on the picture, thumbnails, swipe on the picture
+  function picGo(fig, j) {
+    var pic = fig.querySelector(".wk-pic"), th = fig.querySelectorAll("[data-img]"), n = +pic.dataset.n;
+    if (n < 2) return;
+    j = (j + n) % n; pic.dataset.i = j;
+    var img = pic.querySelector("img"); img.src = th[j].dataset.img; img.alt = img.alt.replace(/\d+\/\d+$/, (j + 1) + "/" + n);
+    pic.querySelector(".wk-count").textContent = (j + 1) + " / " + n;
+    th.forEach(function (x, k) { x.classList.toggle("on", k === j); });
+    th[j].scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
   $("#works").addEventListener("click", function (e) {
     if (e.target.id === "works") { closeWorks(); return; }
+    var st = e.target.closest("[data-step]");
+    if (st) { var f1 = st.closest(".wk-fig"); picGo(f1, +f1.querySelector(".wk-pic").dataset.i + (+st.dataset.step)); LC.audio.sfx("click"); return; }
     var t = e.target.closest("[data-img]"); if (!t) return;
-    var fig = t.closest(".wk-fig"); fig.querySelector(":scope > img").src = t.dataset.img;
-    fig.querySelectorAll("[data-img]").forEach(function (x) { x.classList.toggle("on", x === t); });
+    picGo(t.closest(".wk-fig"), +t.dataset.j);
   });
-  $("#works").addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") wkGo(wk.i - 1); else if (e.key === "ArrowRight") wkGo(wk.i + 1); });
-  (function swipe() {   // finger / mouse swipe on the slides
-    var x0 = null, el = $("#wkTrack");
-    el.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
-    el.addEventListener("pointerup", function (e) { if (x0 === null) return; var d = e.clientX - x0; x0 = null; if (Math.abs(d) > 50) wkGo(wk.i + (d < 0 ? 1 : -1)); });
+  // arrow keys: pictures of the current work first; Shift + arrow (or the big arrows) = next work
+  $("#works").addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    var d = e.key === "ArrowLeft" ? -1 : 1, fig = $("#wkTrack").children[wk.i].querySelector(".wk-fig"), pic = fig && fig.querySelector(".wk-pic");
+    if (!e.shiftKey && pic && +pic.dataset.n > 1) picGo(fig, +pic.dataset.i + d); else wkGo(wk.i + d);
+  });
+  (function swipe() {   // finger / mouse swipe: on a picture = next picture, elsewhere = next work
+    var x0 = null, pic = null, el = $("#wkTrack");
+    el.addEventListener("pointerdown", function (e) { x0 = e.clientX; pic = e.target.closest(".wk-pic"); });
+    el.addEventListener("pointerup", function (e) {
+      if (x0 === null) return; var d = e.clientX - x0; x0 = null; if (Math.abs(d) < 50) return;
+      if (pic && +pic.dataset.n > 1) picGo(pic.closest(".wk-fig"), +pic.dataset.i + (d < 0 ? 1 : -1)); else wkGo(wk.i + (d < 0 ? 1 : -1));
+    });
     el.addEventListener("pointercancel", function () { x0 = null; });
   })();
   $("#btnWorks").addEventListener("click", function () { openWorks(0); });

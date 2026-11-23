@@ -79,7 +79,7 @@
         link: "https://kadr-link.vercel.app",
         repo: "https://github.com/enkhbaysgalanganbat-rgb/KadrLink",
         image: "assets/photo/kadrlink.jpg",
-        images: ["assets/photo/kadrlink.jpg"],
+        images: ["assets/photo/kadrlink.jpg", "assets/photo/kadrlink/kl-2.jpg", "assets/photo/kadrlink/kl-3.jpg", "assets/photo/kadrlink/kl-4.jpg", "assets/photo/kadrlink/kl-5.jpg", "assets/photo/kadrlink/kl-6.jpg", "assets/photo/kadrlink/kl-7.jpg", "assets/photo/kadrlink/kl-8.jpg"],
       },
       {
         id: "ism", title: "ISM Digital Museum", year: "2026", type: "Вэб", hue: 200, rot: -1,
@@ -248,7 +248,7 @@
         desc: "A platform for booking event photographers and videographers: identity check with DAN / e-Mongolia, e-contracts, a 30% / 70% payment flow and AI face search.",
         tech: ["Next.js", "React", "Expo", "Supabase"], skills: ["nextjs", "react", "rn", "supabase", "analysis"],
         link: "https://kadr-link.vercel.app", repo: "https://github.com/enkhbaysgalanganbat-rgb/KadrLink",
-        image: "assets/photo/kadrlink.jpg", images: ["assets/photo/kadrlink.jpg"],
+        image: "assets/photo/kadrlink.jpg", images: MN.projects[0].images,
       },
       {
         id: "ism", title: "ISM Digital Museum", year: "2026", type: "Web", hue: 200, rot: -1,

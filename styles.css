@@ -504,3 +504,16 @@ a.key { text-decoration: none; }
 .wk-fig, .wk-info { min-width: 0; }
 .wk-thumbs { flex-wrap: wrap; }
 @media (max-width: 760px) { .wk-thumbs button { width: 48px; height: 32px; } }
+/* pictures inside one work */
+.wk-pic { position: relative; }
+.wk-pic > img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; background: #ddd2bd; border: 8px solid #fbf8f1; box-shadow: 0 8px 20px rgba(0,0,0,.35); transform: rotate(-.6deg); -webkit-user-drag: none; }
+.wk-pnav { position: absolute; top: 50%; margin-top: -19px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(20,14,10,.62); color: #f4ecdc; font-size: 24px; line-height: 1; cursor: pointer; }
+.wk-pnav.prev { left: 14px; } .wk-pnav.next { right: 14px; }
+.wk-pnav:hover { background: rgba(20,14,10,.85); }
+.wk-count { position: absolute; right: 16px; bottom: 14px; padding: 2px 8px; background: rgba(20,14,10,.7); color: #f4ecdc; font-family: var(--mono); font-size: 12px; }
+.wk-thumbs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.wk-thumbs button { flex: none; }
+@media (max-width: 760px) {
+  .wk-nav { top: auto; bottom: -50px; }   /* the work arrows sit on the dots row, away from the picture arrows */
+  .wk-dots { margin-top: 18px; min-height: 38px; align-items: center; }
+}
