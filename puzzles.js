@@ -9,7 +9,7 @@
  */
 (function () {
   "use strict";
-  var D = window.LC.data, esc = D.esc;
+  var D = window.LC.data, esc = D.esc, L = window.L;
 
   /* ---------- seeded random numbers (cyrb128 hash -> mulberry32) ---------- */
   function makeRng(str) {
@@ -24,7 +24,7 @@
   }
   function int(rng, n) { return Math.floor(rng() * n); }
   function shuffle(rng, arr) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = int(rng, i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function evTitle(id) { return "«" + D.EVIDENCE[id].file + ", " + D.EVIDENCE[id].title + "»"; }
+  function evTitle(id) { return L("«", "“") + D.EVIDENCE[id].file + ", " + D.EVIDENCE[id].title + L("»", "”"); }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
 
   var P = {};
@@ -36,20 +36,20 @@
     var a = N[i], b = N[j], code = String(a.n) + String(b.n);
     return {
       answer: code,
-      title: "Нууц код",
-      intro: "Хавтас 4 оронтой кодоор түгжигдсэн. <b>Эхний 2 орон</b>, " + esc(a.label) + ". <b>Сүүлийн 2 орон</b>, " + esc(b.label) + ".",
-      hints: ["Тоонууд ширэн дээрх баримтуудад бичигдсэн байгаа.", "Хараарай: " + evTitle(a.doc) + (a.doc !== b.doc ? " ба " + evTitle(b.doc) : "") + "."],
+      title: L("Нууц код", "Secret code"),
+      intro: L("Хавтас 4 оронтой кодоор түгжигдсэн. <b>Эхний 2 орон</b>, ", "The folder is locked with a 4-digit code. <b>First 2 digits</b>: the ") + esc(a.label) + L(". <b>Сүүлийн 2 орон</b>, ", ". <b>Last 2 digits</b>: the ") + esc(b.label) + ".",
+      hints: [L("Тоонууд ширээн дээрх баримтуудад бичигдсэн байгаа.", "The numbers are written in the documents on the desk."), L("Хараарай: ", "Look at ") + evTitle(a.doc) + (a.doc !== b.doc ? L(" ба ", " and ") + evTitle(b.doc) : "") + "."],
       render: function (box, api) {
         var row = el("div", "code-row"), ins = [];
         for (var k = 0; k < 4; k++) {
-          var inp = el("input"); inp.type = "text"; inp.inputMode = "numeric"; inp.maxLength = 1; inp.setAttribute("aria-label", (k + 1) + "-р орон"); inp.autocomplete = "off";
+          var inp = el("input"); inp.type = "text"; inp.inputMode = "numeric"; inp.maxLength = 1; inp.setAttribute("aria-label", L((k + 1) + "-р орон", "digit " + (k + 1))); inp.autocomplete = "off";
           (function (idx, input) {
             input.addEventListener("input", function () { input.value = input.value.replace(/\D/g, ""); if (input.value && ins[idx + 1]) ins[idx + 1].focus(); });
             input.addEventListener("keydown", function (e) { if (e.key === "Backspace" && !input.value && ins[idx - 1]) ins[idx - 1].focus(); if (e.key === "Enter") check(); });
           })(k, inp);
           ins.push(inp); row.appendChild(inp);
         }
-        var btn = el("button", "pz-btn", "Нээх"); btn.type = "button"; btn.addEventListener("click", check);
+        var btn = el("button", "pz-btn", L("Нээх", "Open")); btn.type = "button"; btn.addEventListener("click", check);
         function check() {
           var v = ins.map(function (x) { return x.value; }).join("");
           if (v === code) api.solve(); else { api.wrong(); row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake"); }
@@ -68,9 +68,9 @@
     do { order = shuffle(rng, evs); } while (order.every(function (e, i) { return e === sorted[i]; }));
     return {
       answer: sorted.map(function (e) { return e.title; }),
-      title: "Хугацааны дараалал",
-      intro: "Үйл явдлуудыг <b>хамгийн эрт</b> нь дээр, <b>хамгийн сүүлд</b> нь доор байхаар ↑ ↓ товчоор эрэмбэл.",
-      hints: ["Карт бүр дээр он бичигдсэн байгаа. Жижиг оноос том он руу.", "Эхнийх нь: «" + sorted[0].title + "»."],
+      title: L("Хугацааны дараалал", "Timeline"),
+      intro: L("Үйл явдлуудыг <b>хамгийн эрт</b> нь дээр, <b>хамгийн сүүлд</b> нь доор байхаар ↑ ↓ товчоор эрэмбэл.", "Sort the events with ↑ ↓ so the <b>earliest</b> is on top and the <b>latest</b> at the bottom."),
+      hints: [L("Карт бүр дээр он бичигдсэн байгаа. Жижиг оноос том он руу.", "Every card has a year on it. From the smallest year to the largest."), L("Эхнийх нь: «", "The first one is “") + sorted[0].title + L("».", "”.")],
       render: function (box, api) {
         var list = el("ol", "tl-list"); box.appendChild(list);
         function draw() {
@@ -79,14 +79,14 @@
             var li = el("li", "tl-item");
             li.innerHTML = '<span class="tl-when">' + esc(e.when) + '</span><span class="tl-t">' + esc(e.title) + "</span>";
             var up = el("button", "tl-mv", "↑"), dn = el("button", "tl-mv", "↓");
-            up.type = dn.type = "button"; up.setAttribute("aria-label", "Дээш"); dn.setAttribute("aria-label", "Доош");
+            up.type = dn.type = "button"; up.setAttribute("aria-label", L("Дээш", "Up")); dn.setAttribute("aria-label", L("Доош", "Down"));
             up.disabled = i === 0; dn.disabled = i === order.length - 1;
             up.addEventListener("click", function () { move(i, -1); }); dn.addEventListener("click", function () { move(i, 1); });
             li.appendChild(up); li.appendChild(dn); list.appendChild(li);
           });
         }
         function move(i, d) { var t = order[i]; order[i] = order[i + d]; order[i + d] = t; draw(); window.LC.audio.sfx("click"); }
-        var btn = el("button", "pz-btn", "Шалгах"); btn.type = "button";
+        var btn = el("button", "pz-btn", L("Шалгах", "Check")); btn.type = "button";
         btn.addEventListener("click", function () {
           if (order.every(function (e, i) { return e === sorted[i]; })) api.solve(); else { api.wrong(); list.classList.remove("shake"); void list.offsetWidth; list.classList.add("shake"); }
         });
@@ -102,18 +102,18 @@
     var enc = word.split("").map(function (c) { return A[(A.indexOf(c) + shift) % 26]; }).join("");
     return {
       answer: word,
-      title: "Шифрлэсэн мессеж",
-      intro: "Нэг хэрэгслийн нэрийг шифрлэсэн. Үсэг бүрийг цагийн зүүний дагуу <b>" + shift + "</b> байраар шилжүүлсэн (жишээ: A, " + A[shift] + "). Доорх хүснэгтээр буцаан тайл.",
-      hints: ["Дээд мөрөөс шифрлэсэн үсгээ ол, яг доорх үсэг нь жинхэнэ үсэг.", "Эхний үсэг нь «" + word[0] + "». Энэ бол техникийн хэрэгслийн нэр."],
+      title: L("Шифрлэсэн мессеж", "Encrypted message"),
+      intro: L("Нэг хэрэгслийн нэрийг шифрлэсэн. Үсэг бүрийг цагийн зүүний дагуу <b>", "The name of a tool was encrypted. Every letter was shifted forward by <b>") + shift + L("</b> байраар шилжүүлсэн (жишээ: A, ", "</b> places (example: A becomes ") + A[shift] + L("). Доорх хүснэгтээр буцаан тайл.", "). Decode it with the table below."),
+      hints: [L("Дээд мөрөөс шифрлэсэн үсгээ ол, яг доорх үсэг нь жинхэнэ үсэг.", "Find the encrypted letter in the top row; the letter right below it is the real one."), L("Эхний үсэг нь «", "The first letter is “") + word[0] + L("». Энэ бол техникийн хэрэгслийн нэр.", "”. It is the name of a technical tool.")],
       render: function (box, api) {
         box.appendChild(el("div", "cipher-text", esc(enc)));
         var t = el("div", "cipher-map");
         var top = "", bot = "";
         for (var i = 0; i < 26; i++) { top += "<span>" + A[i] + "</span>"; bot += "<span>" + A[(i - shift + 26) % 26] + "</span>"; }
-        t.innerHTML = '<div class="row"><small>шифр</small>' + top + '</div><div class="row"><small>жинхэнэ</small>' + bot + "</div>";
+        t.innerHTML = '<div class="row"><small>' + L("шифр", "code") + '</small>' + top + '</div><div class="row"><small>' + L("жинхэнэ", "real") + '</small>' + bot + "</div>";
         box.appendChild(t);
-        var inp = el("input", "word-in"); inp.type = "text"; inp.autocomplete = "off"; inp.setAttribute("aria-label", "Тайлсан үг"); inp.maxLength = 12;
-        var btn = el("button", "pz-btn", "Шалгах"); btn.type = "button";
+        var inp = el("input", "word-in"); inp.type = "text"; inp.autocomplete = "off"; inp.setAttribute("aria-label", L("Тайлсан үг", "Decoded word")); inp.maxLength = 12;
+        var btn = el("button", "pz-btn", L("Шалгах", "Check")); btn.type = "button";
         function check() { if (inp.value.trim().toUpperCase() === word) api.solve(); else { api.wrong(); inp.classList.remove("shake"); void inp.offsetWidth; inp.classList.add("shake"); } }
         btn.addEventListener("click", check); inp.addEventListener("keydown", function (e) { if (e.key === "Enter") check(); });
         box.appendChild(inp); box.appendChild(btn);
@@ -127,9 +127,9 @@
     var slots = shuffle(rng, [[60, 50], [250, 40], [70, 170], [260, 160], [160, 105]]).slice(0, chain.length);
     return {
       answer: chain,
-      title: "Холболтыг зур",
-      intro: "«" + esc(f.project) + "» төслийн технологийг баримтад бичигдсэн <b>дарааллаар нь</b> дарж, цэгүүдийг холбо.",
-      hints: ["Дарааллыг ширэн дээрх " + evTitle(f.doc) + " баримтаас ол.", "Эхний цэг нь «" + chain[0] + "»."],
+      title: L("Холболтыг зур", "Connect the dots"),
+      intro: L("«" + esc(f.project) + "» төслийн технологийг баримтад бичигдсэн <b>дарааллаар нь</b> дарж, цэгүүдийг холбо.", "Click the technologies of “" + esc(f.project) + "” <b>in the order written</b> in its document to connect the dots."),
+      hints: [L("Дарааллыг ширээн дээрх ", "Find the order in the desk document ") + evTitle(f.doc) + L(" баримтаас ол.", "."), L("Эхний цэг нь «", "The first dot is “") + chain[0] + L("».", "”.")],
       render: function (box, api) {
         var wrap = el("div", "conn"); wrap.style.width = "320px"; wrap.style.height = "210px";
         var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", "0 0 320 210"); wrap.appendChild(svg);
@@ -176,9 +176,9 @@
     opts = shuffle(rng, opts);
     return {
       answer: answer,
-      title: "Дараалал",
-      intro: "Дараалал давтагдаж байна. <b>Дараагийн дүрс</b> аль нь вэ?",
-      hints: ["Нэг давтагдаж буй багц хэдэн дүрстэйг ол.", "Давтагдах багц: " + unit.split("").map(function (c) { return map[c]; }).join(", ") + " (" + u + " дүрс)."],
+      title: L("Дараалал", "Pattern"),
+      intro: L("Дараалал давтагдаж байна. <b>Дараагийн дүрс</b> аль нь вэ?", "The sequence repeats. Which shape comes <b>next</b>?"),
+      hints: [L("Нэг давтагдаж буй багц хэдэн дүрстэйг ол.", "Find how many shapes one repeating group has."), L("Давтагдах багц: ", "Repeating group: ") + unit.split("").map(function (c) { return map[c]; }).join(", ") + " (" + u + L(" дүрс).", " shapes).")],
       render: function (box, api) {
         var row = el("div", "shape-row", seq.map(function (s) { return shape(s); }).join("") + '<span class="q">?</span>');
         var o = el("div", "shape-opts");
@@ -198,9 +198,9 @@
     var right = shuffle(rng, pairs.map(function (p) { return p[1]; }));
     return {
       answer: pairs,
-      title: "Баримт тааруулах",
-      intro: "Зүүн талын сэдэв бүрийг тохирох баримттай нь холбо. Эхлээд зүүн талаас, дараа нь баруун талаас дар.",
-      hints: ["Хариултууд ширэн дээрх баримтуудад бичигдсэн.", "Хараарай: " + pairs.map(function (p) { return evTitle(p[2]); }).join(", ") + "."],
+      title: L("Баримт тааруулах", "Match the evidence"),
+      intro: L("Зүүн талын сэдэв бүрийг тохирох баримттай нь холбо. Эхлээд зүүн талаас, дараа нь баруун талаас дар.", "Match each topic on the left with its evidence. Click on the left first, then on the right."),
+      hints: [L("Хариултууд ширээн дээрх баримтуудад бичигдсэн.", "The answers are in the documents on the desk."), L("Хараарай: ", "Look at ") + pairs.map(function (p) { return evTitle(p[2]); }).join(", ") + "."],
       render: function (box, api) {
         var wrap = el("div", "match"), L = el("div", "mcol"), R = el("div", "mcol"), sel = null, done = 0;
         pairs.forEach(function (p) {
