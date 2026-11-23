@@ -17,6 +17,8 @@
     <nav id="caseTabs" class="case-tabs" aria-label="Хэргийн хавтаснууд"></nav>
     <div id="evTag" class="ev-tag" aria-live="polite"></div>
     <div class="keys">
+      <button type="button" id="btnWorks" class="key key-hi" aria-label="Бүтээлүүд"><i>▦</i><span>Бүтээл</span></button>
+      <a id="btnCV" class="key key-hi" href="assets/docs/cv.pdf" download="Enkhbaysgalan_Ganbat_CV.pdf" data-cv="1" aria-label="CV татах"><i>↓</i><span>CV</span></a>
       <button type="button" id="btnContact" class="key" aria-label="Холбоо барих"><i>@</i><span>Холбоо</span></button>
       <button type="button" id="btnList" class="key" aria-label="Бүх баримтын жагсаалт (L)"><i>≡</i><span>Жагсаалт</span></button>
       <button type="button" id="btnLens" class="key" aria-pressed="false" aria-label="Томруулдаг шил (M)"><i>◎</i><span>Луп</span></button>
@@ -24,6 +26,8 @@
       <label class="vol"><span class="sr-only">Дууны хүч</span><input id="vol" type="range" min="0" max="1" step="0.05" value="0.6"></label>
       <button type="button" id="btnIntro" class="key" aria-label="Танилцуулгыг дахин үзэх"><i>▶</i><span>Интро</span></button>
       <button type="button" id="btnRestart" class="key" aria-label="Мөрдөн байцаалтыг дахин эхлэх"><i>↺</i><span>Шинэ</span></button>
+      <button type="button" id="btnGuide" class="key" aria-label="Заавар"><i>?</i><span>Заавар</span></button>
+      <button type="button" id="btnLang" class="key key-lang" aria-label="Хэл солих"><i>EN</i><span>English</span></button>
     </div>
   </header>
 
@@ -37,7 +41,7 @@
   <div id="tip" hidden></div>
   <!-- bars under the thing you are holding (3D) -->
   <div id="inspBar" class="insp-bar" hidden><span id="inspLinks"></span><button type="button" class="paper-tab" id="inspText">Текстээр унших</button><button type="button" class="paper-tab" id="inspBack">Буцааж тавих</button></div>
-  <div id="caseBar" class="insp-bar" hidden><button type="button" class="paper-tab" id="cbPrev"></button><button type="button" class="paper-tab side" id="cbLeft">Зүүн тал</button><button type="button" class="paper-tab side" id="cbRight">Баруун тал</button><button type="button" class="paper-tab" id="cbText">Текстээр унших</button><button type="button" class="paper-tab" id="cbClose">Хавтсыг хаах</button><button type="button" class="paper-tab" id="cbNext"></button></div>
+  <div id="caseBar" class="insp-bar" hidden><button type="button" class="paper-tab" id="cbPrev"></button><button type="button" class="paper-tab side" id="cbLeft">Зүүн тал</button><button type="button" class="paper-tab side" id="cbRight">Баруун тал</button><button type="button" class="paper-tab" id="cbText">Текстээр унших</button><button type="button" class="paper-tab hi" id="cbWorks" hidden>Бүтээлүүдийг үзэх</button><button type="button" class="paper-tab" id="cbClose">Хавтсыг хаах</button><button type="button" class="paper-tab" id="cbNext"></button></div>
   <div id="pzPanel" hidden><div class="slip" id="slip3"></div></div>
 
   <div id="loading">
@@ -57,7 +61,7 @@
       <p class="typed small-caps">Хэргийн хавтас № 2026-334</p>
       <h2 id="closedTitle" class="typed">THE LAST CASE</h2>
       <p class="typed">Хэргийн хүн: Ганбатын Энхбаясгалан</p>
-      <p class="typed">Нээгдсэн хавтас: 6 / 6</p>
+      <p class="typed" id="closedCount">Нээгдсэн хавтас: 4 / 4</p>
       <div class="big-stamp" aria-hidden="true"><b>ХЭРЭГ ХААГДСАН</b><small>CASE CLOSED</small></div>
       <p class="hand closing-line">Every clue tells a story. This was mine.</p>
       <div class="closed-ctl">
@@ -95,6 +99,28 @@
     </div>
   </div>
 
+  <div id="works" hidden role="dialog" aria-modal="true" aria-labelledby="worksTitle">
+    <div class="works-box">
+      <button type="button" id="worksClose" class="x" aria-label="Хаах">×</button>
+      <div class="sheet-head"><span class="mono">CASE 003</span></div>
+      <h3 id="worksTitle">Бүтээлүүд</h3>
+      <div class="wk-stage" aria-roledescription="carousel">
+        <button type="button" class="wk-nav prev" id="wkPrev" aria-label="Өмнөх">‹</button>
+        <div class="wk-view"><div class="wk-track" id="wkTrack"></div></div>
+        <button type="button" class="wk-nav next" id="wkNext" aria-label="Дараах">›</button>
+      </div>
+      <div class="wk-dots" id="wkDots"></div>
+    </div>
+  </div>
+
+  <div id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="sheet guide-sheet">
+      <button type="button" id="guideClose" class="x" aria-label="Хаах">×</button>
+      <div class="sheet-head"><span class="mono">THE LAST CASE</span></div>
+      <div id="guideBody" class="sheet-body"></div>
+    </div>
+  </div>
+
   <div id="list" hidden role="dialog" aria-modal="true" aria-labelledby="listTitle">
     <div class="sheet">
       <button type="button" id="listClose" class="x" aria-label="Хаах">×</button>
@@ -120,6 +146,7 @@
   <div id="toast" role="status" aria-live="polite"></div>
   <noscript><p style="padding:24px;color:#fff">Энэ портфолио JavaScript шаардлагатай.</p></noscript>
 
+  <script src="i18n.js"></script>
   <script src="content.js"></script>
   <script src="geo.js"></script>
   <script src="data.js"></script>
